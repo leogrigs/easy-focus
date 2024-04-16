@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import Button from "./components/button/button";
 import Timer from "./components/timer/timer";
-
-// TODO: Style
+import { Play, SkipForward, Pause, RotateCcw } from "lucide-react";
 
 const POMODORO_TIME = 20;
 const REST_TIME = 5;
@@ -52,14 +51,21 @@ function App() {
     setOnFocus((onFocus) => !onFocus);
   };
 
+  const getBackgroundColor = (transparency) => {
+    return isOn ? (onFocus ? "#b82e24" : "#2b6e94") : "#2b945a";
+  };
+
   return (
-    <main>
-      <div className="container">
+    <main style={{ backgroundColor: getBackgroundColor() }}>
+      <div
+        className="container"
+        style={{ backgroundColor: getBackgroundColor() }}
+      >
         <Timer time={time} />
         <div className="container-button">
-          <Button label={label} onClick={handleToggle} />
-          <Button label={"Reset"} onClick={handleReset} />
-          <Button label={">"} onClick={handleNext} />
+          <Button label={label} icon={isOn? Pause:Play} onClick={handleToggle} />
+          <Button label={"Reset"} icon={RotateCcw} onClick={handleReset} />
+          <Button icon={SkipForward} onClick={handleNext} />
         </div>
       </div>
     </main>

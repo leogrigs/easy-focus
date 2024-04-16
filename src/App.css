@@ -2,6 +2,7 @@
 
 * {
   font-family: "Nunito";
+  transition: all 0.3s ease-in-out;
 }
 
 body {
@@ -21,18 +22,17 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 24px;
+    gap: 48px;
 
-    border: 2px solid #fff;
     padding: 32px;
     border-radius: 8px;
 
     .container-button {
+      width: 100%;
       display: flex;
       flex-direction: row;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
+      justify-content: space-around;
     }
   }
 }
