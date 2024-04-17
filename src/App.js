@@ -1,8 +1,9 @@
+import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
 import { useEffect, useState } from "react";
 import "./App.css";
 import Button from "./components/button/button";
 import Timer from "./components/timer/timer";
-import { Play, SkipForward, Pause, RotateCcw } from "lucide-react";
+import Title from "./components/title/title";
 
 const POMODORO_TIME = 20;
 const REST_TIME = 5;
@@ -57,13 +58,18 @@ function App() {
 
   return (
     <main style={{ backgroundColor: getBackgroundColor() }}>
+      <Title />
       <div
         className="container"
         style={{ backgroundColor: getBackgroundColor() }}
       >
         <Timer time={time} />
         <div className="container-button">
-          <Button label={label} icon={isOn? Pause:Play} onClick={handleToggle} />
+          <Button
+            label={label}
+            icon={isOn ? Pause : Play}
+            onClick={handleToggle}
+          />
           <Button label={"Reset"} icon={RotateCcw} onClick={handleReset} />
           <Button icon={SkipForward} onClick={handleNext} />
         </div>
