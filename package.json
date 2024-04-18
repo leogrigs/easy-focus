@@ -1,5 +1,6 @@
 {
   "name": "pomodoro",
+  "homepage": "https://leogrigs.github.io/easy-focus",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
