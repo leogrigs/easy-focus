@@ -6,7 +6,7 @@ export default function Title() {
 
   return (
     <div className="title-container">
-      <Clock size={48} />
+      <Clock className="title--icon" />
       <h1 className="title">{label}</h1>
     </div>
   );

@@ -3,4 +3,11 @@
   font-weight: 700;
   line-height: 128px;
   color: #fff;
+  background-color: transparent;
+  border: none;
+
+  @media screen and (max-width: 767px) {
+    font-size: 80px;
+    line-height: 88px;
+  }
 }

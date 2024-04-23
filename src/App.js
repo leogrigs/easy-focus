@@ -6,6 +6,11 @@ import Button from "./components/button/button";
 import Timer from "./components/timer/timer";
 import Title from "./components/title/title";
 
+// TODO: Input feature
+// TODO: index icon
+// TODO: html head name
+
+
 const POMODORO_TIME = 20;
 const REST_TIME = 5;
 
@@ -15,7 +20,7 @@ function App() {
   const [onFocus, setOnFocus] = useState(true);
   const label = isOn ? "Stop" : "Start";
 
-  useEffect(() => {
+  useEffect((button) => {
     if (isOn) {
       const interval = setInterval(() => {
         setTime((prevTime) => {
