@@ -7,8 +7,6 @@ import Timer from "./components/timer/timer";
 import Title from "./components/title/title";
 
 // TODO: Input feature
-// TODO: index icon
-// TODO: html head name
 
 
 const POMODORO_TIME = 20;
