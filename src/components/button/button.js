@@ -1,9 +1,9 @@
 import "./button.css";
 
-export default function Button({ label, icon: Icon, size , onClick }) {
+export default function Button({ label, icon: Icon, className , onClick }) {
   return (
     <button className="button" onClick={onClick}>
-      <Icon size={size} />
+      <Icon className={className} />
     </button>
   );
 }

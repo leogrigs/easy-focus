@@ -6,7 +6,9 @@ import Button from "./components/button/button";
 import Input from "./components/input-number/input-number";
 import Timer from "./components/timer/timer";
 import Title from "./components/title/title";
-import { isMobile } from "./utils/breakpoint";
+
+// TODO: unit test
+// TODO: input validations
 
 const POMODORO_TIME = 20;
 const REST_TIME = 5;
@@ -17,7 +19,6 @@ function App() {
   const [restTime, setRestTime] = useState(REST_TIME);
   const [time, setTime] = useState(pomodoroTime);
   const [onFocus, setOnFocus] = useState(true);
-  const [buttonSize, setButtonSize] = useState(isMobile() ? 24 : 48);
 
   useEffect(() => {
     if (isOn) {
@@ -38,13 +39,6 @@ function App() {
   useEffect(() => {
     handleReset();
   }, [onFocus, pomodoroTime, restTime]);
-
-  useEffect(() => {
-    function handleResize() {
-      setButtonSize(isMobile() ? 24 : 48);
-    }
-    window.addEventListener("resize", handleResize);
-  });
 
   const handleToggle = () => {
     setIsOn((isOn) => !isOn);
@@ -78,18 +72,27 @@ function App() {
 
         <div className="container-button">
           <Button
-            size={buttonSize}
+            className="button--icon"
             icon={isOn ? Pause : Play}
             onClick={handleToggle}
           />
-          <Button size={buttonSize} icon={RotateCcw} onClick={handleReset} />
-          <Button size={buttonSize} icon={SkipForward} onClick={handleNext} />
+          <Button
+            className="button--icon"
+            icon={RotateCcw}
+            onClick={handleReset}
+          />
+          <Button
+            className="button--icon"
+            icon={SkipForward}
+            onClick={handleNext}
+          />
         </div>
 
         <div className="container-input">
           <Input
             label="Focus"
             id="focus"
+            className="test"
             defaultValue={pomodoroTime}
             onSetValue={(value) => setPomodoroTime(value)}
           />
