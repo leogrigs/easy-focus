@@ -16,14 +16,4 @@
   &:hover {
     background-color: #ffffff20;
   }
-
-  .button--icon {
-    width: 48px;
-    height: 48px;
-
-    @media screen and (max-width: 767px) {
-      width: 24px;
-      height: 24px;
-    }
-  }
 }

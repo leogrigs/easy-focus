@@ -1,11 +1,9 @@
 import "./button.css";
 
-export default function Button({ label, icon: Icon, onClick }) {
-  const size = window.innerWidth < 768 ? 24 : 48
-
+export default function Button({ label, icon: Icon, size , onClick }) {
   return (
     <button className="button" onClick={onClick}>
-      <Icon className="button--icon" />
+      <Icon size={size} />
     </button>
   );
 }

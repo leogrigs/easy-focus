@@ -28,12 +28,20 @@ main {
     padding: 32px;
     border-radius: 8px;
 
+    .container-input {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      row-gap: 32px;
+    }
+
     .container-button {
       width: 100%;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: space-around;
+      margin-bottom: 24px;
     }
   }
 }

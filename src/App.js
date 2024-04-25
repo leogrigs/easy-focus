@@ -3,26 +3,26 @@ import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
 import { useEffect, useState } from "react";
 import "./App.css";
 import Button from "./components/button/button";
+import Input from "./components/input-number/input-number";
 import Timer from "./components/timer/timer";
 import Title from "./components/title/title";
-
-// TODO: Input feature
-
+import { isMobile } from "./utils/breakpoint";
 
 const POMODORO_TIME = 20;
 const REST_TIME = 5;
 
 function App() {
   const [isOn, setIsOn] = useState(false);
-  const [time, setTime] = useState(POMODORO_TIME);
+  const [pomodoroTime, setPomodoroTime] = useState(POMODORO_TIME);
+  const [restTime, setRestTime] = useState(REST_TIME);
+  const [time, setTime] = useState(pomodoroTime);
   const [onFocus, setOnFocus] = useState(true);
-  const label = isOn ? "Stop" : "Start";
+  const [buttonSize, setButtonSize] = useState(isMobile() ? 24 : 48);
 
-  useEffect((button) => {
+  useEffect(() => {
     if (isOn) {
       const interval = setInterval(() => {
         setTime((prevTime) => {
-          console.log("interval");
           if (prevTime === 1) {
             setIsOn(false);
             return 0;
@@ -37,7 +37,14 @@ function App() {
 
   useEffect(() => {
     handleReset();
-  }, [onFocus]);
+  }, [onFocus, pomodoroTime, restTime]);
+
+  useEffect(() => {
+    function handleResize() {
+      setButtonSize(isMobile() ? 24 : 48);
+    }
+    window.addEventListener("resize", handleResize);
+  });
 
   const handleToggle = () => {
     setIsOn((isOn) => !isOn);
@@ -49,14 +56,14 @@ function App() {
   };
 
   const getInitialTime = () => {
-    return (onFocus ? POMODORO_TIME : REST_TIME) * 60;
+    return (onFocus ? pomodoroTime : restTime) * 60;
   };
 
   const handleNext = () => {
     setOnFocus((onFocus) => !onFocus);
   };
 
-  const getBackgroundColor = (transparency) => {
+  const getBackgroundColor = () => {
     return isOn ? (onFocus ? "#b82e24" : "#2b6e94") : "#2b945a";
   };
 
@@ -68,14 +75,32 @@ function App() {
         style={{ backgroundColor: getBackgroundColor() }}
       >
         <Timer time={time} />
+
         <div className="container-button">
           <Button
-            label={label}
+            size={buttonSize}
             icon={isOn ? Pause : Play}
             onClick={handleToggle}
           />
-          <Button label={"Reset"} icon={RotateCcw} onClick={handleReset} />
-          <Button icon={SkipForward} onClick={handleNext} />
+          <Button size={buttonSize} icon={RotateCcw} onClick={handleReset} />
+          <Button size={buttonSize} icon={SkipForward} onClick={handleNext} />
+        </div>
+
+        <div className="container-input">
+          <Input
+            label="Focus"
+            id="focus"
+            defaultValue={pomodoroTime}
+            onSetValue={(value) => setPomodoroTime(value)}
+          />
+          <Input
+            label="Rest"
+            id="rest"
+            defaultValue={restTime}
+            onSetValue={(value) => {
+              setRestTime(value);
+            }}
+          />
         </div>
       </div>
     </main>
