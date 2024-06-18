@@ -6,6 +6,7 @@ import Button from "./components/button/button";
 import Input from "./components/input-number/input-number";
 import Timer from "./components/timer/timer";
 import Title from "./components/title/title";
+import sound from "./assets/click.wav";
 
 // TODO: unit test
 // TODO: input validations
@@ -41,6 +42,8 @@ function App() {
   }, [onFocus, pomodoroTime, restTime]);
 
   const handleToggle = () => {
+    const audio = new Audio(sound)
+    audio.play();
     setIsOn((isOn) => !isOn);
   };
 
