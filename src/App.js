@@ -1,14 +1,15 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "./App.css";
 import Button from "./components/button/button";
 import Input from "./components/input-number/input-number";
 import Timer from "./components/timer/timer";
 import Title from "./components/title/title";
 import { playAudio } from "./utils/audio-player";
-import sound from "./assets/click.wav";
+import toggle from "./assets/click.wav";
+import background from "./assets/focus-background.mp3";
 
+// TODO: progress bar
 // TODO: unit test
 // TODO: input validations
 
@@ -21,6 +22,9 @@ function App() {
   const [restTime, setRestTime] = useState(REST_TIME);
   const [time, setTime] = useState(pomodoroTime);
   const [onFocus, setOnFocus] = useState(true);
+
+  const toggleAudioPlayed = useRef(false);
+  const backgroundAudioPlayed = useRef(false);
 
   useEffect(() => {
     if (isOn) {
@@ -42,8 +46,23 @@ function App() {
     handleReset();
   }, [onFocus, pomodoroTime, restTime]);
 
+  useEffect(() => {
+    if (toggleAudioPlayed.current) {
+      playAudio("audio-toggle", toggle);
+    } else {
+      toggleAudioPlayed.current = true;
+    }
+  }, [isOn]);
+
+  useEffect(() => {
+    if (backgroundAudioPlayed.current) {
+      playAudio("audio-background", background, 0.1, true);
+    } else {
+      backgroundAudioPlayed.current = true;
+    }
+  }, [isOn]);
+
   const handleToggle = () => {
-    playAudio(sound);
     setIsOn((isOn) => !isOn);
   };
 
