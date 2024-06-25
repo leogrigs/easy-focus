@@ -24,8 +24,7 @@ function App() {
   const [time, setTime] = useState(pomodoroTime);
   const [onFocus, setOnFocus] = useState(true);
 
-  const toggleAudioPlayed = useRef(false);
-  const backgroundAudioPlayed = useRef(false);
+  const audioPlayer = useRef(false);
 
   const getInitialTime = useCallback(() => {
     return (onFocus ? pomodoroTime : restTime) * 60;
@@ -55,18 +54,11 @@ function App() {
   }, [onFocus, pomodoroTime, restTime, handleReset]);
 
   useEffect(() => {
-    if (toggleAudioPlayed.current) {
+    if (audioPlayer.current) {
       playAudio("audio-toggle", toggle);
-    } else {
-      toggleAudioPlayed.current = true;
-    }
-  }, [isOn]);
-
-  useEffect(() => {
-    if (backgroundAudioPlayed.current) {
       playAudio("audio-background", background, 0.1, true);
     } else {
-      backgroundAudioPlayed.current = true;
+      audioPlayer.current = true;
     }
   }, [isOn]);
 
