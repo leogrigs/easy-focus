@@ -5,7 +5,7 @@ import Button from "./components/Button";
 import Input from "./components/InputNumber";
 import Timer from "./components/Timer";
 import Title from "./components/Title";
-import { playAudio } from "./utils/audio-player";
+import { playAudio } from "./utils/audioPlayer";
 import toggle from "./assets/click.wav";
 import background from "./assets/focus-background.mp3";
 
