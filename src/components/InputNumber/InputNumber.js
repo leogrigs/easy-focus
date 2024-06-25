@@ -1,9 +1,10 @@
 import { Check, X } from "lucide-react";
 import { useState } from "react";
-import Button from "../button/button";
-import "./input-number.css";
+import Button from "../Button";
+import PropTypes from "prop-types";
+import "./InputNumber.css";
 
-export default function InputNumber({ id, label, defaultValue, onSetValue }) {
+const InputNumber = ({ id, label, defaultValue, onSetValue }) => {
   const [value, setValue] = useState(defaultValue);
 
   const clear = () => {
@@ -29,4 +30,13 @@ export default function InputNumber({ id, label, defaultValue, onSetValue }) {
       </div>
     </div>
   );
-}
+};
+
+InputNumber.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  defaultValue: PropTypes.number.isRequired,
+  onSetValue: PropTypes.func.isRequired,
+};
+
+export default InputNumber;
