@@ -1,5 +1,5 @@
 import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import "./App.css";
 import Button from "./components/button/button";
 import Input from "./components/input-number/input-number";
@@ -26,6 +26,15 @@ function App() {
   const toggleAudioPlayed = useRef(false);
   const backgroundAudioPlayed = useRef(false);
 
+  const getInitialTime = useCallback(() => {
+    return (onFocus ? pomodoroTime : restTime) * 60;
+  }, [onFocus, pomodoroTime, restTime]);
+
+  const handleReset = useCallback(() => {
+    setIsOn(false);
+    setTime(getInitialTime());
+  }, [getInitialTime]);
+
   useEffect(() => {
     if (isOn) {
       const interval = setInterval(() => {
@@ -44,7 +53,7 @@ function App() {
 
   useEffect(() => {
     handleReset();
-  }, [onFocus, pomodoroTime, restTime]);
+  }, [onFocus, pomodoroTime, restTime, handleReset]);
 
   useEffect(() => {
     if (toggleAudioPlayed.current) {
@@ -64,15 +73,6 @@ function App() {
 
   const handleToggle = () => {
     setIsOn((isOn) => !isOn);
-  };
-
-  const handleReset = () => {
-    setIsOn(false);
-    setTime(getInitialTime());
-  };
-
-  const getInitialTime = () => {
-    return (onFocus ? pomodoroTime : restTime) * 60;
   };
 
   const handleNext = () => {
