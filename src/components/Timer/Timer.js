@@ -1,12 +1,19 @@
 import "./Timer.css";
+import PropTypes from "prop-types";
 
-export default function Timer({ time }) {
-  const minutes = Math.floor(time / 60);
-  const seconds = time % 60;
+const Timer = ({ time }) => {
+  const minutes = String(Math.floor(time / 60)).padStart(2, "0");
+  const seconds = String(time % 60).padStart(2, "0");
 
   return (
-    <span className="counter">{`${minutes < 10 ? "0" : ""}${minutes}:${
-      seconds < 10 ? "0" : ""
-    }${seconds}`}</span>
+    <span className="counter">
+      {minutes}:{seconds}
+    </span>
   );
-}
+};
+
+Timer.propTypes = {
+  time: PropTypes.number.isRequired,
+};
+
+export default Timer;

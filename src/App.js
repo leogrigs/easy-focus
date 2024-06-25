@@ -1,10 +1,10 @@
 import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import "./App.css";
-import Button from "./components/button/button";
-import Input from "./components/input-number/input-number";
-import Timer from "./components/timer/timer";
-import Title from "./components/title/title";
+import Button from "./components/Button";
+import Input from "./components/InputNumber";
+import Timer from "./components/Timer";
+import Title from "./components/Title";
 import { playAudio } from "./utils/audio-player";
 import toggle from "./assets/click.wav";
 import background from "./assets/focus-background.mp3";
