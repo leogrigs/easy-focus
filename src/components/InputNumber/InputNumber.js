@@ -1,7 +1,7 @@
 import { Check, X } from "lucide-react";
 import { useState } from "react";
-import Button from "../button/button";
-import "./input-number.css";
+import Button from "../Button/Button";
+import "./InputNumber.css";
 
 export default function InputNumber({ id, label, defaultValue, onSetValue }) {
   const [value, setValue] = useState(defaultValue);
