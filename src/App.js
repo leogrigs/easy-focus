@@ -8,6 +8,7 @@ import Title from "./components/Title";
 import { playAudio } from "./utils/audioPlayer";
 import toggle from "./assets/click.wav";
 import background from "./assets/focus-background.mp3";
+import useInterval from "./hooks/useInterval";
 
 // TODO: progress bar
 // TODO: unit test
@@ -35,21 +36,19 @@ function App() {
     setTime(getInitialTime());
   }, [getInitialTime]);
 
-  useEffect(() => {
-    if (isOn) {
-      const interval = setInterval(() => {
-        setTime((prevTime) => {
-          if (prevTime === 1) {
-            setIsOn(false);
-            return 0;
-          } else {
-            return prevTime - 1;
-          }
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [isOn]);
+  useInterval(
+    () => {
+      setTime((prevTime) => {
+        if (prevTime === 1) {
+          setIsOn(false);
+          return 0;
+        } else {
+          return prevTime - 1;
+        }
+      });
+    },
+    isOn ? 1000 : null
+  );
 
   useEffect(() => {
     handleReset();
