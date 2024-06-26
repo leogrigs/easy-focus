@@ -12,8 +12,8 @@ import useInterval from "./hooks/useInterval";
 import { AudioPlayer } from "./utils/AudioPlayer.class";
 import Tab from "./components/Tab";
 
-const POMODORO_TIME = 5;
-const REST_TIME = 3;
+const POMODORO_TIME = 25;
+const REST_TIME = 5;
 
 function App() {
   const [isOn, setIsOn] = useState(false);
