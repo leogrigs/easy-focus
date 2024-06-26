@@ -48,8 +48,8 @@ function App() {
         if (prevTime === 0) {
           const nextFocus = !onFocus;
           setIsOn(false);
-          playAudios(false);
           setOnFocus(nextFocus);
+          playAudios(false);
           return getInitialTime();
         } else {
           return prevTime - 1;
@@ -63,6 +63,17 @@ function App() {
     handleReset();
   }, [onFocus, pomodoroTime, restTime, handleReset]);
 
+  const playAudios = (_isOn) => {
+    if (toggleAudioRef.current && backgroundAudioRef.current) {
+      toggleAudioRef.current.play();
+      if (_isOn) {
+        backgroundAudioRef.current.play();
+      } else {
+        backgroundAudioRef.current.pause();
+      }
+    }
+  };
+
   const handleToggle = () => {
     setIsOn((isOn) => {
       playAudios(!isOn);
@@ -70,15 +81,11 @@ function App() {
     });
   };
 
-  const playAudios = (_isOn) => {
-    toggleAudioRef.current.play();
-    isOn
-      ? backgroundAudioRef.current.pause()
-      : backgroundAudioRef.current.play();
-  };
-
   const handleNext = () => {
-    setOnFocus((onFocus) => !onFocus);
+    setOnFocus((onFocus) => {
+      playAudios(false);
+      return !onFocus;
+    });
   };
 
   const getBackgroundColor = () => {
@@ -103,7 +110,10 @@ function App() {
           <Button
             className="button--icon"
             icon={RotateCcw}
-            onClick={handleReset}
+            onClick={() => {
+              handleReset();
+              playAudios(false);
+            }}
           />
           <Button
             className="button--icon"
@@ -118,14 +128,14 @@ function App() {
             id="focus"
             className="test"
             defaultValue={pomodoroTime}
-            onSetValue={(value) => setPomodoroTime(value)}
+            onSetValue={(value) => setPomodoroTime(Number(value))}
           />
           <Input
             label="Rest"
             id="rest"
             defaultValue={restTime}
             onSetValue={(value) => {
-              setRestTime(value);
+              setRestTime(Number(value));
             }}
           />
         </div>
