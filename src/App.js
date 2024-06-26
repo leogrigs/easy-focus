@@ -5,10 +5,10 @@ import Button from "./components/Button";
 import Input from "./components/InputNumber";
 import Timer from "./components/Timer";
 import Title from "./components/Title";
-import { playAudio } from "./utils/audioPlayer";
 import toggle from "./assets/click.wav";
 import background from "./assets/focus-background.mp3";
 import useInterval from "./hooks/useInterval";
+import { AudioPlayer } from "./utils/AudioPlayer.class";
 
 const POMODORO_TIME = 5;
 const REST_TIME = 3;
@@ -20,10 +20,21 @@ function App() {
   const [time, setTime] = useState(pomodoroTime);
   const [onFocus, setOnFocus] = useState(true);
 
-  const audioPlayer = useRef(false);
+  const toggleAudioRef = useRef(null);
+  const backgroundAudioRef = useRef(null);
+
+  useEffect(() => {
+    toggleAudioRef.current = new AudioPlayer("audio-toggle", toggle);
+    backgroundAudioRef.current = new AudioPlayer(
+      "audio-background",
+      background,
+      0.1,
+      true
+    );
+  }, []);
 
   const getInitialTime = useCallback(() => {
-    return (onFocus ? pomodoroTime : restTime) * 1;
+    return (onFocus ? pomodoroTime : restTime) * 60;
   }, [onFocus, pomodoroTime, restTime]);
 
   const handleReset = useCallback(() => {
@@ -37,8 +48,9 @@ function App() {
         if (prevTime === 0) {
           const nextFocus = !onFocus;
           setIsOn(false);
+          playAudios(false);
           setOnFocus(nextFocus);
-          return 0;
+          return getInitialTime();
         } else {
           return prevTime - 1;
         }
@@ -51,17 +63,18 @@ function App() {
     handleReset();
   }, [onFocus, pomodoroTime, restTime, handleReset]);
 
-  useEffect(() => {
-    if (audioPlayer.current) {
-      playAudio("audio-toggle", toggle);
-      playAudio("audio-background", background, 0.1, true);
-    } else {
-      audioPlayer.current = true;
-    }
-  }, [isOn]);
-
   const handleToggle = () => {
-    setIsOn((isOn) => !isOn);
+    setIsOn((isOn) => {
+      playAudios(!isOn);
+      return !isOn;
+    });
+  };
+
+  const playAudios = (_isOn) => {
+    toggleAudioRef.current.play();
+    isOn
+      ? backgroundAudioRef.current.pause()
+      : backgroundAudioRef.current.play();
   };
 
   const handleNext = () => {
