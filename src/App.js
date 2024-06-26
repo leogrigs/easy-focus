@@ -10,8 +10,8 @@ import toggle from "./assets/click.wav";
 import background from "./assets/focus-background.mp3";
 import useInterval from "./hooks/useInterval";
 
-const POMODORO_TIME = 20;
-const REST_TIME = 5;
+const POMODORO_TIME = 5;
+const REST_TIME = 3;
 
 function App() {
   const [isOn, setIsOn] = useState(false);
@@ -23,7 +23,7 @@ function App() {
   const audioPlayer = useRef(false);
 
   const getInitialTime = useCallback(() => {
-    return (onFocus ? pomodoroTime : restTime) * 60;
+    return (onFocus ? pomodoroTime : restTime) * 1;
   }, [onFocus, pomodoroTime, restTime]);
 
   const handleReset = useCallback(() => {
@@ -34,8 +34,10 @@ function App() {
   useInterval(
     () => {
       setTime((prevTime) => {
-        if (prevTime === 1) {
+        if (prevTime === 0) {
+          const nextFocus = !onFocus;
           setIsOn(false);
+          setOnFocus(nextFocus);
           return 0;
         } else {
           return prevTime - 1;
