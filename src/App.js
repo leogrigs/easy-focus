@@ -10,6 +10,7 @@ import toggle from "./assets/click.wav";
 import background from "./assets/focus-background.mp3";
 import useInterval from "./hooks/useInterval";
 import { AudioPlayer } from "./utils/AudioPlayer.class";
+import Tab from "./components/Tab";
 
 const POMODORO_TIME = 5;
 const REST_TIME = 3;
@@ -21,9 +22,12 @@ function App() {
   const [percentComplete, setPercentComplete] = useState(0);
   const [time, setTime] = useState(pomodoroTime);
   const [onFocus, setOnFocus] = useState(true);
+  const [activeTab, setActiveTab] = useState(0);
 
   const toggleAudioRef = useRef(null);
   const backgroundAudioRef = useRef(null);
+
+  const tabs = ["Pomodoro", "Config"];
 
   useEffect(() => {
     toggleAudioRef.current = new AudioPlayer("audio-toggle", toggle);
@@ -95,6 +99,10 @@ function App() {
     });
   };
 
+  const handleTabChange = (index) => {
+    setActiveTab(index);
+  };
+
   const getBackgroundColor = () => {
     return isOn ? (onFocus ? "#b82e24" : "#2b6e94") : "#2b945a";
   };
@@ -106,47 +114,56 @@ function App() {
         className="container"
         style={{ backgroundColor: getBackgroundColor() }}
       >
-        <CircularProgressBar percent={percentComplete} size={300}>
-          <Timer time={time} size={300} />
-        </CircularProgressBar>
+        <Tab tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
+        <div className="container-content">
+          {activeTab === 0 && (
+            <>
+              <CircularProgressBar percent={percentComplete} size={300}>
+                <Timer time={time} size={300} />
+              </CircularProgressBar>
 
-        <div className="container-button">
-          <Button
-            className="button--icon"
-            icon={isOn ? Pause : Play}
-            onClick={handleToggle}
-          />
-          <Button
-            className="button--icon"
-            icon={RotateCcw}
-            onClick={() => {
-              handleReset();
-              playAudios(false);
-            }}
-          />
-          <Button
-            className="button--icon"
-            icon={SkipForward}
-            onClick={handleNext}
-          />
-        </div>
+              <div className="container-button">
+                <Button
+                  className="button--icon"
+                  icon={isOn ? Pause : Play}
+                  onClick={handleToggle}
+                />
+                <Button
+                  className="button--icon"
+                  icon={RotateCcw}
+                  onClick={() => {
+                    handleReset();
+                    playAudios(false);
+                  }}
+                />
+                <Button
+                  className="button--icon"
+                  icon={SkipForward}
+                  onClick={handleNext}
+                />
+              </div>
+            </>
+          )}
 
-        <div className="container-input">
-          <Input
-            label="Focus"
-            id="focus"
-            className="test"
-            defaultValue={pomodoroTime}
-            onSetValue={(value) => setPomodoroTime(Number(value))}
-          />
-          <Input
-            label="Rest"
-            id="rest"
-            defaultValue={restTime}
-            onSetValue={(value) => {
-              setRestTime(Number(value));
-            }}
-          />
+          {activeTab === 1 && (
+            <div className="container-input">
+              <Input
+                label="Focus"
+                id="focus"
+                className="test"
+                defaultValue={pomodoroTime}
+                onSetValue={(value) => setPomodoroTime(Number(value))}
+              />
+              <Input
+                label="Rest"
+                id="rest"
+                defaultValue={restTime}
+                onSetValue={(value) => {
+                  setRestTime(Number(value));
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </main>

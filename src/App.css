@@ -28,6 +28,11 @@ main {
     padding: 32px;
     border-radius: 8px;
 
+    .container-content {
+      width: 300px;
+      height: 500px;
+    }
+
     .container-input {
       width: 100%;
       display: flex;
