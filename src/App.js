@@ -5,6 +5,7 @@ import Button from "./components/Button";
 import Input from "./components/InputNumber";
 import Timer from "./components/Timer";
 import Title from "./components/Title";
+import CircularProgressBar from "./components/CircularProgressBar";
 import toggle from "./assets/click.wav";
 import background from "./assets/focus-background.mp3";
 import useInterval from "./hooks/useInterval";
@@ -17,6 +18,7 @@ function App() {
   const [isOn, setIsOn] = useState(false);
   const [pomodoroTime, setPomodoroTime] = useState(POMODORO_TIME);
   const [restTime, setRestTime] = useState(REST_TIME);
+  const [percentComplete, setPercentComplete] = useState(0);
   const [time, setTime] = useState(pomodoroTime);
   const [onFocus, setOnFocus] = useState(true);
 
@@ -40,11 +42,16 @@ function App() {
   const handleReset = useCallback(() => {
     setIsOn(false);
     setTime(getInitialTime());
+    setPercentComplete(0);
   }, [getInitialTime]);
 
   useInterval(
     () => {
       setTime((prevTime) => {
+        const remainingTime = prevTime - 1;
+        setPercentComplete(
+          ((getInitialTime() - remainingTime) / getInitialTime()) * 100
+        );
         if (prevTime === 0) {
           const nextFocus = !onFocus;
           setIsOn(false);
@@ -52,7 +59,7 @@ function App() {
           playAudios(false);
           return getInitialTime();
         } else {
-          return prevTime - 1;
+          return remainingTime;
         }
       });
     },
@@ -99,7 +106,9 @@ function App() {
         className="container"
         style={{ backgroundColor: getBackgroundColor() }}
       >
-        <Timer time={time} />
+        <CircularProgressBar percent={percentComplete} size={300}>
+          <Timer time={time} size={300} />
+        </CircularProgressBar>
 
         <div className="container-button">
           <Button

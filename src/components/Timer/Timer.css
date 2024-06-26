@@ -1,13 +1,16 @@
 .counter {
-  font-size: 112px;
+  z-index: 1;
+  font-size: 72px;
   font-weight: 600;
-  line-height: 120px;
-  color: #fff;
+  line-height: 90px;
+  fill: #fff;
   background-color: transparent;
   border: none;
 
+  transform: rotate(90deg);
+
   @media screen and (max-width: 767px) {
-    font-size: 80px;
-    line-height: 88px;
+    font-size: 52px;
+    line-height: 70px;
   }
 }

@@ -4,7 +4,6 @@
   display: flex;
   align-items: center;
   gap: 24px;
-  margin-bottom: 72px;
 
   .title {
     margin: 0;
@@ -17,11 +16,11 @@
     width: 48px;
     height: 48px;
   }
-  
+
   @media screen and (max-width: 767px) {
     .title {
       font-size: 24px;
-      line-height: 32px;  
+      line-height: 32px;
     }
 
     .title--icon {
@@ -29,5 +28,4 @@
       height: 24px;
     }
   }
-  
 }
