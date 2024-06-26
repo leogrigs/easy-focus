@@ -10,10 +10,6 @@ import toggle from "./assets/click.wav";
 import background from "./assets/focus-background.mp3";
 import useInterval from "./hooks/useInterval";
 
-// TODO: progress bar
-// TODO: unit test
-// TODO: input validations
-
 const POMODORO_TIME = 20;
 const REST_TIME = 5;
 
