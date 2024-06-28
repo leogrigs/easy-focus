@@ -118,6 +118,10 @@ function App() {
         <div className="container-content">
           {activeTab === 0 && (
             <>
+              <div className="container-feedback">
+                <span>{onFocus ? "Focus" : "Rest"}</span>
+              </div>
+
               <CircularProgressBar percent={percentComplete} size={300}>
                 <Timer time={time} size={300} />
               </CircularProgressBar>

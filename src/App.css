@@ -33,6 +33,20 @@ main {
       height: 500px;
     }
 
+    .container-feedback {
+      text-align: center;
+      font-size: 24px;
+      line-height: 32px;
+      font-weight: 500;
+      color: #eee;
+      margin-bottom: 32px;
+      span {
+        padding: 0 12px;
+        background-color: #ffffff26;
+        border-radius: 8px;
+      }
+    }
+
     .container-input {
       width: 100%;
       display: flex;
