@@ -1,11 +1,10 @@
 export class AudioPlayer {
   audioElement;
 
-  constructor(id, source, volume = 1, loop = false) {
+  constructor(id, source, loop = false) {
     this.audioElement = this.getAudioElement(id);
     this.audioElement.src = source;
     this.audioElement.loop = loop;
-    this.audioElement.volume = volume;
   }
 
   getAudioElement(id) {

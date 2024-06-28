@@ -11,6 +11,7 @@ import background from "./assets/focus-background.mp3";
 import useInterval from "./hooks/useInterval";
 import { AudioPlayer } from "./utils/AudioPlayer.class";
 import Tab from "./components/Tab";
+import SoundController from "./components/SoundController";
 
 const POMODORO_TIME = 25;
 const REST_TIME = 5;
@@ -34,7 +35,6 @@ function App() {
     backgroundAudioRef.current = new AudioPlayer(
       "audio-background",
       background,
-      0.1,
       true
     );
   }, []);
@@ -150,23 +150,26 @@ function App() {
           )}
 
           {activeTab === 1 && (
-            <div className="container-input">
-              <Input
-                label="Focus"
-                id="focus"
-                className="test"
-                defaultValue={pomodoroTime}
-                onSetValue={(value) => setPomodoroTime(Number(value))}
-              />
-              <Input
-                label="Rest"
-                id="rest"
-                defaultValue={restTime}
-                onSetValue={(value) => {
-                  setRestTime(Number(value));
-                }}
-              />
-            </div>
+            <>
+              <div className="container-input">
+                <Input
+                  label="Focus"
+                  id="focus"
+                  className="test"
+                  defaultValue={pomodoroTime}
+                  onSetValue={(value) => setPomodoroTime(Number(value))}
+                />
+                <Input
+                  label="Rest"
+                  id="rest"
+                  defaultValue={restTime}
+                  onSetValue={(value) => {
+                    setRestTime(Number(value));
+                  }}
+                />
+              </div>
+              <SoundController />
+            </>
           )}
         </div>
       </div>
