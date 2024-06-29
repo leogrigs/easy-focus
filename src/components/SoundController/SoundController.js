@@ -1,3 +1,4 @@
+import "./SoundController.css";
 import { Volume2, VolumeX } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Button from "../Button";
@@ -33,10 +34,15 @@ const SoundController = () => {
       audio.volume = newVolume;
       setVolume(newVolume);
     }
+    if (newVolume === "0") {
+      setIsMuted(true);
+    } else {
+      setIsMuted(false);
+    }
   };
 
   return (
-    <>
+    <div className="sound-controller">
       <div>
         <Button
           className="button--icon"
@@ -45,17 +51,20 @@ const SoundController = () => {
         />
       </div>
 
-      <div>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          value={volume}
-          step="0.01"
-          onChange={handleVolumeChange}
-        />
-      </div>
-    </>
+      <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        className="sound-controller-slider"
+        value={volume}
+        onChange={handleVolumeChange}
+      />
+
+      <span className="sound-controller-label">{`${Math.round(
+        volume * 100
+      )}%`}</span>
+    </div>
   );
 };
 
