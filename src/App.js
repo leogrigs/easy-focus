@@ -2,7 +2,6 @@ import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import "./App.css";
 import Button from "./components/Button";
-import Input from "./components/InputNumber";
 import Timer from "./components/Timer";
 import Title from "./components/Title";
 import CircularProgressBar from "./components/CircularProgressBar";
@@ -12,6 +11,7 @@ import useInterval from "./hooks/useInterval";
 import { AudioPlayer } from "./utils/AudioPlayer.class";
 import Tab from "./components/Tab";
 import SoundController from "./components/SoundController";
+import InputRange from "./components/InputRange";
 
 const POMODORO_TIME = 25;
 const REST_TIME = 5;
@@ -152,18 +152,26 @@ function App() {
           {activeTab === 1 && (
             <>
               <div className="container-input">
-                <Input
+                <InputRange
                   label="Focus"
-                  id="focus"
-                  className="test"
                   defaultValue={pomodoroTime}
-                  onSetValue={(value) => setPomodoroTime(Number(value))}
+                  min={1}
+                  max={60}
+                  step={1}
+                  valueLabelFunction={(value) => `${value}min`}
+                  onConfirm={(value) => {
+                    setPomodoroTime(Number(value));
+                  }}
                 />
-                <Input
+
+                <InputRange
                   label="Rest"
-                  id="rest"
                   defaultValue={restTime}
-                  onSetValue={(value) => {
+                  min={1}
+                  max={60}
+                  step={1}
+                  valueLabelFunction={(value) => `${value}min`}
+                  onConfirm={(value) => {
                     setRestTime(Number(value));
                   }}
                 />
