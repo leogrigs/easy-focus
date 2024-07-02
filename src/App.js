@@ -12,6 +12,7 @@ import { AudioPlayer } from "./utils/AudioPlayer.class";
 import Tab from "./components/Tab";
 import SoundController from "./components/SoundController";
 import InputRange from "./components/InputRange";
+import Config from "./components/Config/Config";
 
 const POMODORO_TIME = 25;
 const REST_TIME = 5;
@@ -152,27 +153,13 @@ function App() {
           {activeTab === 1 && (
             <>
               <div className="container-input">
-                <InputRange
-                  label="Focus"
-                  defaultValue={pomodoroTime}
-                  min={1}
-                  max={60}
-                  step={1}
-                  valueLabelFunction={(value) => `${value}min`}
-                  onConfirm={(value) => {
-                    setPomodoroTime(Number(value));
-                  }}
-                />
-
-                <InputRange
-                  label="Rest"
-                  defaultValue={restTime}
-                  min={1}
-                  max={60}
-                  step={1}
-                  valueLabelFunction={(value) => `${value}min`}
-                  onConfirm={(value) => {
-                    setRestTime(Number(value));
+                <Config
+                  initialPomodoroTime={pomodoroTime}
+                  initialRestTime={restTime}
+                  setConfig={(pomodoroTime, restTime) => {
+                    playAudios(false);
+                    setPomodoroTime(pomodoroTime);
+                    setRestTime(restTime);
                   }}
                 />
               </div>
