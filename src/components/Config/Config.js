@@ -1,11 +1,48 @@
 import { PropTypes } from "prop-types";
 import InputRange from "../InputRange";
-import React from "react";
-import { useState } from "react";
+import { Volume2, VolumeX, Check, RotateCcw } from "lucide-react";
+import "./Config.css";
+import Button from "../Button";
+import React, { useEffect, useState } from "react";
 
 const Config = ({ initialPomodoroTime, initialRestTime, setConfig }) => {
   const [pomodoroTime, setPomodoroTime] = useState(initialPomodoroTime);
   const [restTime, setRestTime] = useState(initialRestTime);
+  const [isMuted, setIsMuted] = useState(false);
+  const [volume, setVolume] = useState(0.5);
+
+  useEffect(() => {
+    const audioElement = document.getElementsByTagName("audio")[0];
+    if (audioElement) {
+      const _isMuted = audioElement.muted;
+      const _volume = audioElement.volume;
+      setIsMuted(_isMuted);
+      setVolume(_volume);
+    }
+  }, []);
+
+  const handleToggle = () => {
+    setIsMuted((prevIsMuted) => {
+      const audioElements = document.getElementsByTagName("audio");
+      for (let audio of audioElements) {
+        audio.muted = !prevIsMuted;
+      }
+      return !prevIsMuted;
+    });
+  };
+
+  const handleVolumeChange = (_volume) => {
+    const audioElements = document.getElementsByTagName("audio");
+    for (let audio of audioElements) {
+      audio.volume = _volume;
+      setVolume(_volume);
+    }
+    if (_volume === 0) {
+      setIsMuted(true);
+    } else {
+      setIsMuted(false);
+    }
+  };
 
   const resetConfig = () => {
     const _pomodoroTime = Config.defaultProps.initialPomodoroTime;
@@ -16,9 +53,9 @@ const Config = ({ initialPomodoroTime, initialRestTime, setConfig }) => {
   };
 
   return (
-    <div>
+    <div className="config">
       {/* Inputs */}
-      <div>
+      <div className="config-input">
         <InputRange
           label="Focus"
           value={pomodoroTime}
@@ -40,12 +77,38 @@ const Config = ({ initialPomodoroTime, initialRestTime, setConfig }) => {
           valueLabelFunction={(value) => `${value}min`}
           handleValueChange={(value) => setRestTime(value)}
         />
+
+        <InputRange
+          label="Volume"
+          value={volume}
+          defaultValue={volume}
+          min={0}
+          max={1}
+          step={0.01}
+          valueLabelFunction={(value) => `${Math.round(value * 100)}%`}
+          handleValueChange={(value) => handleVolumeChange(value)}
+        />
       </div>
 
       {/* Buttons */}
       <div>
-        <button onClick={() => setConfig(pomodoroTime, restTime)}>Save</button>
-        <button onClick={resetConfig}>Reset</button>
+        <div className="container-button">
+          <Button
+            className="button--icon"
+            icon={RotateCcw}
+            onClick={resetConfig}
+          />
+          <Button
+            className="button--icon"
+            icon={isMuted ? VolumeX : Volume2}
+            onClick={handleToggle}
+          />
+          <Button
+            className="button--icon"
+            icon={Check}
+            onClick={() => setConfig(pomodoroTime, restTime)}
+          />
+        </div>
       </div>
     </div>
   );
