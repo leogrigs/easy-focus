@@ -10,8 +10,6 @@ import background from "./assets/focus-background.mp3";
 import useInterval from "./hooks/useInterval";
 import { AudioPlayer } from "./utils/AudioPlayer.class";
 import Tab from "./components/Tab";
-import SoundController from "./components/SoundController";
-import InputRange from "./components/InputRange";
 import Config from "./components/Config/Config";
 
 const POMODORO_TIME = 25;
@@ -152,7 +150,7 @@ function App() {
 
           {activeTab === 1 && (
             <>
-              <div className="container-input">
+              <div className="container-config">
                 <Config
                   initialPomodoroTime={pomodoroTime}
                   initialRestTime={restTime}
@@ -163,7 +161,6 @@ function App() {
                   }}
                 />
               </div>
-              <SoundController />
             </>
           )}
         </div>
