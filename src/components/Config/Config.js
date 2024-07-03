@@ -57,7 +57,7 @@ const Config = ({ initialPomodoroTime, initialRestTime, setConfig }) => {
       {/* Inputs */}
       <div className="config-input">
         <InputRange
-          label="Focus"
+          label="Focus:"
           value={pomodoroTime}
           defaultValue={pomodoroTime}
           min={1}
@@ -68,7 +68,7 @@ const Config = ({ initialPomodoroTime, initialRestTime, setConfig }) => {
         />
 
         <InputRange
-          label="Rest"
+          label="Rest:"
           value={restTime}
           defaultValue={restTime}
           min={1}
@@ -79,7 +79,7 @@ const Config = ({ initialPomodoroTime, initialRestTime, setConfig }) => {
         />
 
         <InputRange
-          label="Volume"
+          label="Volume:"
           value={volume}
           defaultValue={volume}
           min={0}
