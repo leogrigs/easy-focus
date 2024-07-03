@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/easy-focus/static/css/main.1400e666.css",
-    "main.js": "/easy-focus/static/js/main.3b743604.js",
+    "main.css": "/easy-focus/static/css/main.c19c20e9.css",
+    "main.js": "/easy-focus/static/js/main.526be230.js",
     "static/js/453.680679a8.chunk.js": "/easy-focus/static/js/453.680679a8.chunk.js",
     "static/media/focus-background.mp3": "/easy-focus/static/media/focus-background.bdcfcff7b40126b56920.mp3",
     "static/media/click.wav": "/easy-focus/static/media/click.3c1c2c528ec270058782.wav",
     "index.html": "/easy-focus/index.html",
-    "main.1400e666.css.map": "/easy-focus/static/css/main.1400e666.css.map",
-    "main.3b743604.js.map": "/easy-focus/static/js/main.3b743604.js.map",
+    "main.c19c20e9.css.map": "/easy-focus/static/css/main.c19c20e9.css.map",
+    "main.526be230.js.map": "/easy-focus/static/js/main.526be230.js.map",
     "453.680679a8.chunk.js.map": "/easy-focus/static/js/453.680679a8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.1400e666.css",
-    "static/js/main.3b743604.js"
+    "static/css/main.c19c20e9.css",
+    "static/js/main.526be230.js"
   ]
 }
