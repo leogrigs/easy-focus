@@ -18,6 +18,10 @@ main {
   justify-content: center;
   flex-direction: column;
 
+  .title {
+    margin-bottom: 32px;
+  }
+
   .container {
     display: flex;
     flex-direction: column;
@@ -27,6 +31,10 @@ main {
 
     padding: 32px;
     border-radius: 8px;
+
+    @media screen and (max-width: 480px) {
+      padding: 10px;
+    }
 
     .container-content {
       width: 300px;
@@ -45,6 +53,10 @@ main {
         background-color: #ffffff26;
         border-radius: 8px;
       }
+    }
+
+    .container-timer {
+      margin-bottom: 32px;
     }
 
     .container-config {
