@@ -49,7 +49,7 @@ const Config = ({ initialPomodoroTime, initialRestTime, setConfig }) => {
     const _restTime = Config.defaultProps.initialRestTime;
     setPomodoroTime(_pomodoroTime);
     setRestTime(_restTime);
-    setConfig(_pomodoroTime, _restTime);
+    setConfig(_pomodoroTime, _restTime, true);
   };
 
   return (
@@ -106,7 +106,7 @@ const Config = ({ initialPomodoroTime, initialRestTime, setConfig }) => {
           <Button
             className="button--icon"
             icon={Check}
-            onClick={() => setConfig(pomodoroTime, restTime)}
+            onClick={() => setConfig(pomodoroTime, restTime, false)}
           />
         </div>
       </div>
