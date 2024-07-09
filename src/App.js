@@ -154,10 +154,12 @@ function App() {
                 <Config
                   initialPomodoroTime={pomodoroTime}
                   initialRestTime={restTime}
-                  setConfig={(pomodoroTime, restTime) => {
+                  setConfig={(pomodoroTime, restTime, isReseting) => {
                     playAudios(false);
+                    setIsOn(false);
                     setPomodoroTime(pomodoroTime);
                     setRestTime(restTime);
+                    if (!isReseting) setActiveTab(0);
                   }}
                 />
               </div>
