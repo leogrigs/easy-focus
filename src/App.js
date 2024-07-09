@@ -108,7 +108,9 @@ function App() {
 
   return (
     <main style={{ backgroundColor: getBackgroundColor() }}>
-      <Title />
+      <div className="title">
+        <Title />
+      </div>
       <div
         className="container"
         style={{ backgroundColor: getBackgroundColor() }}
@@ -121,9 +123,11 @@ function App() {
                 <span>{onFocus ? "Focus" : "Rest"}</span>
               </div>
 
-              <CircularProgressBar percent={percentComplete} size={300}>
-                <Timer time={time} size={300} />
-              </CircularProgressBar>
+              <div className="container-timer">
+                <CircularProgressBar percent={percentComplete} size={300}>
+                  <Timer time={time} size={300} />
+                </CircularProgressBar>
+              </div>
 
               <div className="container-button">
                 <Button
