@@ -115,12 +115,12 @@ function App() {
               <div className="container-feedback">
                 <span
                   style={{
-                    color: isOn ? (onFocus ? "#ea3737" : "#4abdfc") : "#FFF",
+                    color: isOn ? (onFocus ? "#ea3737" : "#4abdfc") : "#52ec2f",
                     backgroundColor: isOn
                       ? onFocus
                         ? "#ea37372e"
                         : "#4abdfc2e"
-                      : "#ffffff2e",
+                      : "#52ec2f2e",
                   }}
                 >
                   {onFocus ? "Focus" : "Rest"}
