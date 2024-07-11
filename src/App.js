@@ -102,25 +102,29 @@ function App() {
     setActiveTab(index);
   };
 
-  const getBackgroundColor = () => {
-    return isOn ? (onFocus ? "#b82e24" : "#2b6e94") : "#2b945a";
-  };
-
   return (
-    <main style={{ backgroundColor: getBackgroundColor() }}>
+    <main>
       <div className="title">
         <Title />
       </div>
-      <div
-        className="container"
-        style={{ backgroundColor: getBackgroundColor() }}
-      >
+      <div className="container">
         <Tab tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
         <div className="container-content">
           {activeTab === 0 && (
             <>
               <div className="container-feedback">
-                <span>{onFocus ? "Focus" : "Rest"}</span>
+                <span
+                  style={{
+                    color: isOn ? (onFocus ? "#ea3737" : "#4abdfc") : "#FFF",
+                    backgroundColor: isOn
+                      ? onFocus
+                        ? "#ea37372e"
+                        : "#4abdfc2e"
+                      : "#ffffff2e",
+                  }}
+                >
+                  {onFocus ? "Focus" : "Rest"}
+                </span>
               </div>
 
               <div className="container-timer">
