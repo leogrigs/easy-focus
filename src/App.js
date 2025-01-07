@@ -1,16 +1,16 @@
 import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
-import Button from "./components/Button";
-import Timer from "./components/Timer";
-import Title from "./components/Title";
-import CircularProgressBar from "./components/CircularProgressBar";
 import toggle from "./assets/click.wav";
 import background from "./assets/focus-background.mp3";
+import Button from "./components/Button";
+import CircularProgressBar from "./components/CircularProgressBar";
+import Config from "./components/Config/Config";
+import Tab from "./components/Tab";
+import Timer from "./components/Timer";
+import Title from "./components/Title";
 import useInterval from "./hooks/useInterval";
 import { AudioPlayer } from "./utils/AudioPlayer.class";
-import Tab from "./components/Tab";
-import Config from "./components/Config/Config";
 
 const POMODORO_TIME = 25;
 const REST_TIME = 5;
