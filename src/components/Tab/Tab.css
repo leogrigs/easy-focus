@@ -1,0 +1,26 @@
+.tab {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+
+  .tab-item {
+    width: 100%;
+    padding: 8px;
+
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-size: 20px;
+    font-weight: 500;
+    color: #fff;
+
+    &:hover {
+      background-color: #ffffff20;
+    }
+  }
+
+  .active {
+    border-color: #fff;
+  }
+}

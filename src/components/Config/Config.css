@@ -1,0 +1,13 @@
+.config {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  row-gap: 72px;
+
+  .config-input {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    row-gap: 48px;
+  }
+}
