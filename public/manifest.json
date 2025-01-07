@@ -1,14 +1,14 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "easy-focus",
+  "name": "Easy Focus",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "/easy-focus/logo.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     }
   ],
-  "start_url": ".",
+  "start_url": "/easy-focus",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
