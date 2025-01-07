@@ -1,0 +1,10 @@
+.circular-progress {
+  transform: rotate(-90deg);
+}
+
+.circular-progress-circle {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 12;
+  stroke-linecap: round;
+}
