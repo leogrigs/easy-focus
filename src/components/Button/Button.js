@@ -4,7 +4,7 @@ import "./Button.css";
 const Button = ({ icon: Icon, className, onClick }) => {
   return (
     <button className="button" onClick={onClick}>
-      <Icon className={className} />
+      <Icon data-testid="button-icon" className={className} />
     </button>
   );
 };
