@@ -1,5 +1,5 @@
-import React from "react";
 import PropTypes from "prop-types";
+import React from "react";
 import "./CircularProgressBar.css";
 
 const CircularProgressBar = ({ percent, size, children }) => {
@@ -8,11 +8,17 @@ const CircularProgressBar = ({ percent, size, children }) => {
   const strokeDashoffset = circumference - (percent / 100) * circumference;
 
   return (
-    <svg className="circular-progress" width={size} height={size}>
+    <svg
+      data-testid="circular-progress"
+      className="circular-progress"
+      width={size}
+      height={size}
+    >
       {children}
 
       <circle
         className="circular-progress-circle"
+        data-testid="circular-progress-circle"
         cx={size / 2}
         cy={size / 2}
         r={radius}
