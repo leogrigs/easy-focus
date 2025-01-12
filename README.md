@@ -9,7 +9,7 @@
 
 > **"I often struggle with maintaining focus during tasks. I needed a lightweight and customizable timer to implement the Pomodoro Technique effectively."**
 
-This project addresses the need for a clean, adaptable, and visually appealing timer for those who value productivity. It combines functionality with modern design to support users in achieving their goals.
+This project addresses the need for a clean, adaptable, and visually appealing timer for those who value productivity and continuous learning. It combines functionality with modern design to support users in achieving their goals.
 
 ## Features
 
