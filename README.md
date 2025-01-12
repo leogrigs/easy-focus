@@ -28,7 +28,7 @@ This project addresses the need for a clean, adaptable, and visually appealing t
 
 ## Preview
 
-![Pomodoro Timer Interface](https://via.placeholder.com/800x400.png?text=Pomodoro+Timer+Preview)
+![Pomodoro Timer Interface](https://github.com/user-attachments/assets/bf9ec3d8-fd61-4546-8155-88e7f13a0dff)
 
 ## Author
 
