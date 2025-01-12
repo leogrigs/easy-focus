@@ -9,7 +9,7 @@
 
 > **"I often struggle with maintaining focus during tasks. I needed a clean and customizable timer to implement the Pomodoro Technique effectively."**
 
-This project addresses the need for a clean, adaptable, and visually appealing timer for those who value productivity. It combines functionality with modern design to support users in achieving their goals.
+This project addresses the need for a clean, adaptable, and visually appealing timer for those who value productivity and continuous learning. It combines functionality with modern design to support users in achieving their goals.
 
 ## Features
 
@@ -28,7 +28,7 @@ This project addresses the need for a clean, adaptable, and visually appealing t
 
 ## Preview
 
-![Pomodoro Timer Interface](https://via.placeholder.com/800x400.png?text=Pomodoro+Timer+Preview)
+![Pomodoro Timer Interface](https://github.com/user-attachments/assets/bf9ec3d8-fd61-4546-8155-88e7f13a0dff)
 
 ## Author
 
