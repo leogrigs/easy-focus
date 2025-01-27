@@ -12,9 +12,12 @@ const InputRange = ({
 }) => {
   return (
     <div className="input-range">
-      <label className="input-range-label">{label}</label>
+      <label for={label.toLowerCase()} className="input-range-label">
+        {label}
+      </label>
       <input
         type="range"
+        id={label.toLowerCase()}
         min={min}
         max={max}
         step={step}
