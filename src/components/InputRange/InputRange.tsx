@@ -1,5 +1,14 @@
-import PropTypes from "prop-types";
 import "./InputRange.css";
+
+interface InputRangeProps {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  valueLabelFunction: (value: number) => string;
+  handleValueChange: (value: number) => void;
+}
 
 const InputRange = ({
   label,
@@ -9,15 +18,16 @@ const InputRange = ({
   step,
   valueLabelFunction,
   handleValueChange,
-}) => {
+}: InputRangeProps) => {
+  const id = `input-range-${label.toLowerCase().replace(/\s+/g, "-")}`;
   return (
     <div className="input-range">
-      <label for={label.toLowerCase()} className="input-range-label">
+      <label htmlFor={id} className="input-range-label">
         {label}
       </label>
       <input
         type="range"
-        id={label.toLowerCase()}
+        id={id}
         min={min}
         max={max}
         step={step}
@@ -28,16 +38,6 @@ const InputRange = ({
       <span className="input-range-value">{valueLabelFunction(value)}</span>
     </div>
   );
-};
-
-InputRange.propTypes = {
-  label: PropTypes.string.isRequired,
-  value: PropTypes.number.isRequired,
-  min: PropTypes.number.isRequired,
-  max: PropTypes.number.isRequired,
-  step: PropTypes.number.isRequired,
-  valueLabelFunction: PropTypes.func.isRequired,
-  handleValueChange: PropTypes.func.isRequired,
 };
 
 export default InputRange;

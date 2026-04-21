@@ -20,12 +20,12 @@ function App() {
   const [pomodoroTime, setPomodoroTime] = useState(POMODORO_TIME);
   const [restTime, setRestTime] = useState(REST_TIME);
   const [percentComplete, setPercentComplete] = useState(0);
-  const [time, setTime] = useState(pomodoroTime);
+  const [time, setTime] = useState(pomodoroTime * 60);
   const [onFocus, setOnFocus] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
 
-  const toggleAudioRef = useRef(null);
-  const backgroundAudioRef = useRef(null);
+  const toggleAudioRef = useRef<AudioPlayer | null>(null);
+  const backgroundAudioRef = useRef<AudioPlayer | null>(null);
 
   const tabs = ["Pomodoro", "Config"];
 
@@ -41,6 +41,17 @@ function App() {
   const getInitialTime = useCallback(() => {
     return (onFocus ? pomodoroTime : restTime) * 60;
   }, [onFocus, pomodoroTime, restTime]);
+
+  const playAudios = useCallback((playing: boolean) => {
+    if (toggleAudioRef.current && backgroundAudioRef.current) {
+      toggleAudioRef.current.play();
+      if (playing) {
+        backgroundAudioRef.current.play();
+      } else {
+        backgroundAudioRef.current.pause();
+      }
+    }
+  }, []);
 
   const handleReset = useCallback(() => {
     setIsOn(false);
@@ -61,9 +72,8 @@ function App() {
           setOnFocus(nextFocus);
           playAudios(false);
           return getInitialTime();
-        } else {
-          return remainingTime;
         }
+        return remainingTime;
       });
     },
     isOn ? 1000 : null
@@ -73,33 +83,18 @@ function App() {
     handleReset();
   }, [onFocus, pomodoroTime, restTime, handleReset]);
 
-  const playAudios = (_isOn) => {
-    if (toggleAudioRef.current && backgroundAudioRef.current) {
-      toggleAudioRef.current.play();
-      if (_isOn) {
-        backgroundAudioRef.current.play();
-      } else {
-        backgroundAudioRef.current.pause();
-      }
-    }
-  };
-
   const handleToggle = () => {
-    setIsOn((isOn) => {
-      playAudios(!isOn);
-      return !isOn;
+    setIsOn((prev) => {
+      playAudios(!prev);
+      return !prev;
     });
   };
 
   const handleNext = () => {
-    setOnFocus((onFocus) => {
+    setOnFocus((prev) => {
       playAudios(false);
-      return !onFocus;
+      return !prev;
     });
-  };
-
-  const handleTabChange = (index) => {
-    setActiveTab(index);
   };
 
   return (
@@ -108,7 +103,7 @@ function App() {
         <Title />
       </div>
       <div className="container">
-        <Tab tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
+        <Tab tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
         <div className="container-content">
           {activeTab === 0 && (
             <>
@@ -157,21 +152,19 @@ function App() {
           )}
 
           {activeTab === 1 && (
-            <>
-              <div className="container-config">
-                <Config
-                  initialPomodoroTime={pomodoroTime}
-                  initialRestTime={restTime}
-                  setConfig={(pomodoroTime, restTime, isReseting) => {
-                    playAudios(false);
-                    setIsOn(false);
-                    setPomodoroTime(pomodoroTime);
-                    setRestTime(restTime);
-                    if (!isReseting) setActiveTab(0);
-                  }}
-                />
-              </div>
-            </>
+            <div className="container-config">
+              <Config
+                initialPomodoroTime={pomodoroTime}
+                initialRestTime={restTime}
+                setConfig={(newPomodoroTime, newRestTime, isReseting) => {
+                  playAudios(false);
+                  setIsOn(false);
+                  setPomodoroTime(newPomodoroTime);
+                  setRestTime(newRestTime);
+                  if (!isReseting) setActiveTab(0);
+                }}
+              />
+            </div>
           )}
         </div>
       </div>
