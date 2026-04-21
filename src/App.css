@@ -1,84 +1,151 @@
-@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins&display=swap");
-
-* {
-  font-family: "Nunito";
-  transition: all 0.3s ease-in-out;
+.app {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+  gap: var(--space-6);
 }
 
-body {
-  background-color: #000;
+.app-header {
+  margin-bottom: var(--space-2);
 }
 
-main {
-  width: 100vw;
-  height: 100vh;
+.app-card {
+  width: min(420px, 100%);
+  background: var(--bg-elevated);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft), var(--shadow-inset);
+  overflow: hidden;
+}
 
+.app-card-content {
+  padding: var(--space-6) var(--space-6) var(--space-5);
+}
+
+.pomodoro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  animation: fade-in var(--duration-base) var(--ease);
+}
+
+.pomodoro-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.pomodoro-mode-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+  opacity: 0.7;
+}
+
+.pomodoro-mode-dot.is-pulsing {
+  animation: pulse 1.6s ease-in-out infinite;
+  opacity: 1;
+}
+
+.pomodoro-mode--focus {
+  color: var(--accent-focus);
+}
+.pomodoro-mode--rest {
+  color: var(--accent-rest);
+}
+
+.pomodoro-timer {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
+  --ring-color: var(--text-muted);
+}
+.pomodoro-timer--focus {
+  --ring-color: var(--accent-focus);
+}
+.pomodoro-timer--rest {
+  --ring-color: var(--accent-rest);
+}
 
-  .title {
-    margin-bottom: 32px;
+.pomodoro-timer.is-running::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-full);
+  background: radial-gradient(
+    circle at center,
+    color-mix(in srgb, var(--ring-color) 18%, transparent) 0%,
+    transparent 60%
+  );
+  animation: glow 3.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.pomodoro-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
   }
-
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 48px;
-
-    padding: 32px;
-    border-radius: 8px;
-
-    @media screen and (max-width: 480px) {
-      padding: 10px;
-    }
-
-    .container-content {
-      width: 300px;
-      height: 440px;
-    }
-
-    .container-feedback {
-      text-align: center;
-      font-size: 24px;
-      line-height: 32px;
-      font-weight: 600;
-      margin-bottom: 32px;
-      span {
-        padding: 0 12px;
-        border-radius: 8px;
-      }
-    }
-
-    .container-timer {
-      margin-bottom: 32px;
-    }
-
-    .container-config {
-      width: 100%;
-      height: 100%;
-    }
-
-    .container-button {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-around;
-      margin-bottom: 24px;
-    }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
   }
 }
 
-.button--icon {
-  width: 32px;
-  height: 32px;
+@keyframes glow {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
 
-  @media screen and (max-width: 767px) {
-    width: 24px;
-    height: 24px;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-card {
+    border-radius: var(--radius-lg);
+  }
+  .app-card-content {
+    padding: var(--space-5) var(--space-4) var(--space-4);
+  }
+  .pomodoro {
+    gap: var(--space-4);
   }
 }

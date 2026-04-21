@@ -1,16 +1,15 @@
 .counter {
-  z-index: 1;
-  font-size: 72px;
+  font-family: var(--font-sans);
+  font-size: 68px;
   font-weight: 600;
-  line-height: 90px;
-  fill: #fff;
-  background-color: transparent;
-  border: none;
-
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  fill: var(--text-primary);
   transform: rotate(90deg);
+}
 
-  @media screen and (max-width: 767px) {
-    font-size: 52px;
-    line-height: 70px;
+@media (max-width: 480px) {
+  .counter {
+    font-size: 56px;
   }
 }

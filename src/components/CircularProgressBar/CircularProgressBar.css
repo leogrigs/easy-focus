@@ -1,10 +1,20 @@
 .circular-progress {
   transform: rotate(-90deg);
+  overflow: visible;
+}
+
+.circular-progress-track {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 4;
 }
 
 .circular-progress-circle {
   fill: none;
-  stroke: #eee;
-  stroke-width: 12;
+  stroke: var(--ring-color, currentColor);
+  stroke-width: 4;
   stroke-linecap: round;
+  transition: stroke-dashoffset 600ms var(--ease),
+    stroke var(--duration-base) var(--ease);
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--ring-color, currentColor) 60%, transparent));
 }

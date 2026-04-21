@@ -1,13 +1,35 @@
 .config {
   display: flex;
-  height: 100%;
   flex-direction: column;
-  row-gap: 72px;
+  gap: var(--space-6);
+  animation: fade-in var(--duration-base) var(--ease);
+}
 
-  .config-input {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    row-gap: 48px;
-  }
+.config-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.config-section-heading {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.config-input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.config-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
 }

@@ -1,19 +1,71 @@
 .button {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
-
-  padding: 8px;
-  border: none;
-  border-radius: 50%;
-  background-color: transparent;
-
-  color: #fff;
-
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: transform var(--duration-fast) var(--ease),
+    background var(--duration-fast) var(--ease),
+    border-color var(--duration-fast) var(--ease);
+}
 
-  &:hover {
-    background-color: #ffffff20;
+.button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-strong);
+}
+
+.button:active {
+  transform: scale(0.94);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--accent-focus);
+  outline-offset: 2px;
+}
+
+.button--default {
+  width: 44px;
+  height: 44px;
+}
+
+.button--primary {
+  width: 60px;
+  height: 60px;
+  background: var(--text-primary);
+  color: var(--bg-base);
+  border-color: var(--text-primary);
+}
+
+.button--primary:hover {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(255, 255, 255, 0.88);
+}
+
+.button--icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.button--primary .button--icon {
+  width: 22px;
+  height: 22px;
+}
+
+@media (max-width: 480px) {
+  .button--default {
+    width: 40px;
+    height: 40px;
+  }
+  .button--primary {
+    width: 54px;
+    height: 54px;
+  }
+  .button--icon {
+    width: 18px;
+    height: 18px;
   }
 }

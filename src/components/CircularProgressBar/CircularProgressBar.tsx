@@ -4,12 +4,14 @@ import "./CircularProgressBar.css";
 interface CircularProgressBarProps {
   percent: number;
   size: number;
+  stroke?: string;
   children?: ReactNode;
 }
 
 const CircularProgressBar = ({
   percent,
   size,
+  stroke,
   children,
 }: CircularProgressBarProps) => {
   const radius = size / 2 - 10;
@@ -23,6 +25,12 @@ const CircularProgressBar = ({
       width={size}
       height={size}
     >
+      <circle
+        className="circular-progress-track"
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+      />
       {children}
       <circle
         className="circular-progress-circle"
@@ -30,9 +38,9 @@ const CircularProgressBar = ({
         cx={size / 2}
         cy={size / 2}
         r={radius}
-        strokeWidth="10"
         strokeDasharray={circumference}
         strokeDashoffset={strokeDashoffset}
+        style={stroke ? { stroke } : undefined}
       />
     </svg>
   );

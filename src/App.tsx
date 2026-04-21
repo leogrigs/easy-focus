@@ -5,7 +5,7 @@ import toggle from "./assets/click.wav";
 import background from "./assets/focus-background.mp3";
 import Button from "./components/Button";
 import CircularProgressBar from "./components/CircularProgressBar";
-import Config from "./components/Config/Config";
+import Config from "./components/Config";
 import Tab from "./components/Tab";
 import Timer from "./components/Timer";
 import Title from "./components/Title";
@@ -27,8 +27,6 @@ function App() {
   const toggleAudioRef = useRef<AudioPlayer | null>(null);
   const backgroundAudioRef = useRef<AudioPlayer | null>(null);
 
-  const tabs = ["Pomodoro", "Config"];
-
   useEffect(() => {
     toggleAudioRef.current = new AudioPlayer("audio-toggle", toggle);
     backgroundAudioRef.current = new AudioPlayer(
@@ -38,19 +36,15 @@ function App() {
     );
   }, []);
 
-  const getInitialTime = useCallback(() => {
-    return (onFocus ? pomodoroTime : restTime) * 60;
-  }, [onFocus, pomodoroTime, restTime]);
+  const getInitialTime = useCallback(
+    () => (onFocus ? pomodoroTime : restTime) * 60,
+    [onFocus, pomodoroTime, restTime]
+  );
 
   const playAudios = useCallback((playing: boolean) => {
-    if (toggleAudioRef.current && backgroundAudioRef.current) {
-      toggleAudioRef.current.play();
-      if (playing) {
-        backgroundAudioRef.current.play();
-      } else {
-        backgroundAudioRef.current.pause();
-      }
-    }
+    toggleAudioRef.current?.play();
+    if (playing) backgroundAudioRef.current?.play();
+    else backgroundAudioRef.current?.pause();
   }, []);
 
   const handleReset = useCallback(() => {
@@ -67,9 +61,8 @@ function App() {
           ((getInitialTime() - remainingTime) / getInitialTime()) * 100
         );
         if (prevTime === 0) {
-          const nextFocus = !onFocus;
           setIsOn(false);
-          setOnFocus(nextFocus);
+          setOnFocus((prev) => !prev);
           playAudios(false);
           return getInitialTime();
         }
@@ -97,77 +90,82 @@ function App() {
     });
   };
 
+  const modeLabel = onFocus ? "Focus" : "Rest";
+  const modeClass = onFocus ? "focus" : "rest";
+
   return (
-    <main>
-      <div className="title">
+    <main className="app">
+      <header className="app-header">
         <Title />
-      </div>
-      <div className="container">
-        <Tab tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
-        <div className="container-content">
-          {activeTab === 0 && (
-            <>
-              <div className="container-feedback">
+      </header>
+
+      <section className="app-card">
+        <Tab
+          tabs={["Pomodoro", "Config"]}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
+
+        <div className="app-card-content">
+          {activeTab === 0 ? (
+            <div className="pomodoro">
+              <div className={`pomodoro-mode pomodoro-mode--${modeClass}`}>
                 <span
-                  style={{
-                    color: isOn ? (onFocus ? "#ea3737" : "#4abdfc") : "#52ec2f",
-                    backgroundColor: isOn
-                      ? onFocus
-                        ? "#ea37372e"
-                        : "#4abdfc2e"
-                      : "#52ec2f2e",
-                  }}
-                >
-                  {onFocus ? "Focus" : "Rest"}
-                </span>
+                  className={`pomodoro-mode-dot${isOn ? " is-pulsing" : ""}`}
+                  aria-hidden="true"
+                />
+                <span className="pomodoro-mode-label">{modeLabel}</span>
               </div>
 
-              <div className="container-timer">
+              <div
+                className={`pomodoro-timer pomodoro-timer--${modeClass}${
+                  isOn ? " is-running" : ""
+                }`}
+              >
                 <CircularProgressBar percent={percentComplete} size={300}>
                   <Timer time={time} size={300} />
                 </CircularProgressBar>
               </div>
 
-              <div className="container-button">
+              <div className="pomodoro-controls">
                 <Button
-                  className="button--icon"
-                  icon={isOn ? Pause : Play}
-                  onClick={handleToggle}
-                />
-                <Button
-                  className="button--icon"
+                  variant="default"
                   icon={RotateCcw}
                   onClick={() => {
                     handleReset();
                     playAudios(false);
                   }}
+                  ariaLabel="Resetar"
                 />
                 <Button
-                  className="button--icon"
+                  variant="primary"
+                  icon={isOn ? Pause : Play}
+                  onClick={handleToggle}
+                  ariaLabel={isOn ? "Pausar" : "Iniciar"}
+                />
+                <Button
+                  variant="default"
                   icon={SkipForward}
                   onClick={handleNext}
+                  ariaLabel="Pular"
                 />
               </div>
-            </>
-          )}
-
-          {activeTab === 1 && (
-            <div className="container-config">
-              <Config
-                initialPomodoroTime={pomodoroTime}
-                initialRestTime={restTime}
-                setConfig={(newPomodoroTime, newRestTime, isReseting) => {
-                  playAudios(false);
-                  setIsOn(false);
-                  setPomodoroTime(newPomodoroTime);
-                  setRestTime(newRestTime);
-                  if (!isReseting) setActiveTab(0);
-                }}
-              />
             </div>
+          ) : (
+            <Config
+              initialPomodoroTime={pomodoroTime}
+              initialRestTime={restTime}
+              setConfig={(newPomodoro, newRest, isResetting) => {
+                playAudios(false);
+                setIsOn(false);
+                setPomodoroTime(newPomodoro);
+                setRestTime(newRest);
+                if (!isResetting) setActiveTab(0);
+              }}
+            />
           )}
         </div>
-      </div>
+      </section>
     </main>
   );
 }

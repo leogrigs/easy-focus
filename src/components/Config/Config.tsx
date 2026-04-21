@@ -24,30 +24,26 @@ const Config = ({
   const [volume, setVolume] = useState(0.5);
 
   useEffect(() => {
-    const audioElement = document.getElementsByTagName("audio")[0];
-    if (audioElement) {
-      setIsMuted(audioElement.muted);
-      setVolume(audioElement.volume);
+    const audio = document.getElementsByTagName("audio")[0];
+    if (audio) {
+      setIsMuted(audio.muted);
+      setVolume(audio.volume);
     }
   }, []);
 
   const handleToggle = () => {
-    setIsMuted((prevIsMuted) => {
-      const audioElements = document.getElementsByTagName("audio");
-      for (const audio of audioElements) {
-        audio.muted = !prevIsMuted;
-      }
-      return !prevIsMuted;
+    setIsMuted((prev) => {
+      const audios = document.getElementsByTagName("audio");
+      for (const a of audios) a.muted = !prev;
+      return !prev;
     });
   };
 
-  const handleVolumeChange = (nextVolume: number) => {
-    const audioElements = document.getElementsByTagName("audio");
-    for (const audio of audioElements) {
-      audio.volume = nextVolume;
-    }
-    setVolume(nextVolume);
-    setIsMuted(nextVolume === 0);
+  const handleVolumeChange = (v: number) => {
+    const audios = document.getElementsByTagName("audio");
+    for (const a of audios) a.volume = v;
+    setVolume(v);
+    setIsMuted(v === 0);
   };
 
   const resetConfig = () => {
@@ -58,53 +54,63 @@ const Config = ({
 
   return (
     <div className="config">
-      <div className="config-input">
-        <InputRange
-          label="Focus:"
-          value={pomodoroTime}
-          min={1}
-          max={60}
-          step={1}
-          valueLabelFunction={(value) => `${value}min`}
-          handleValueChange={setPomodoroTime}
-        />
+      <section className="config-section">
+        <h3 className="config-section-heading">Tempos</h3>
+        <div className="config-input">
+          <InputRange
+            label="Focus:"
+            value={pomodoroTime}
+            min={1}
+            max={60}
+            step={1}
+            valueLabelFunction={(v) => `${v}min`}
+            handleValueChange={setPomodoroTime}
+          />
+          <InputRange
+            label="Rest:"
+            value={restTime}
+            min={1}
+            max={30}
+            step={1}
+            valueLabelFunction={(v) => `${v}min`}
+            handleValueChange={setRestTime}
+          />
+        </div>
+      </section>
 
-        <InputRange
-          label="Rest:"
-          value={restTime}
-          min={1}
-          max={60}
-          step={1}
-          valueLabelFunction={(value) => `${value}min`}
-          handleValueChange={setRestTime}
-        />
+      <section className="config-section">
+        <h3 className="config-section-heading">Volume</h3>
+        <div className="config-input">
+          <InputRange
+            label="Volume:"
+            value={volume}
+            min={0}
+            max={1}
+            step={0.01}
+            valueLabelFunction={(v) => `${Math.round(v * 100)}%`}
+            handleValueChange={handleVolumeChange}
+          />
+        </div>
+      </section>
 
-        <InputRange
-          label="Volume:"
-          value={volume}
-          min={0}
-          max={1}
-          step={0.01}
-          valueLabelFunction={(value) => `${Math.round(value * 100)}%`}
-          handleValueChange={handleVolumeChange}
-        />
-      </div>
-
-      <div className="container-button">
+      <div className="config-footer">
         <Button
-          className="button--icon"
+          variant="default"
           icon={RotateCcw}
           onClick={resetConfig}
+          ariaLabel="Restaurar padrões"
         />
         <Button
-          className="button--icon"
+          variant="default"
           icon={isMuted ? VolumeX : Volume2}
           onClick={handleToggle}
+          ariaLabel={isMuted ? "Desmutar" : "Mutar"}
         />
         <Button
-          className="button--icon"
+          variant="primary"
           icon={Check}
           onClick={() => setConfig(pomodoroTime, restTime, false)}
+          ariaLabel="Salvar"
         />
       </div>
     </div>

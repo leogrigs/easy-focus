@@ -5,11 +5,24 @@ interface ButtonProps {
   icon: LucideIcon;
   className?: string;
   onClick: () => void;
+  ariaLabel?: string;
+  variant?: "default" | "primary";
 }
 
-const Button = ({ icon: Icon, className = "", onClick }: ButtonProps) => {
+const Button = ({
+  icon: Icon,
+  className = "",
+  onClick,
+  ariaLabel,
+  variant = "default",
+}: ButtonProps) => {
   return (
-    <button type="button" className="button" onClick={onClick}>
+    <button
+      type="button"
+      className={`button button--${variant}`}
+      onClick={onClick}
+      aria-label={ariaLabel}
+    >
       <Icon data-testid="button-icon" className={className} />
     </button>
   );
