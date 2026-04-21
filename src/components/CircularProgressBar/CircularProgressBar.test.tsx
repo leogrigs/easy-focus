@@ -1,11 +1,11 @@
 import { render, screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
 import CircularProgressBar from "./CircularProgressBar";
 
 describe("CircularProgressBar Component", () => {
   it("renders an SVG element", () => {
     render(<CircularProgressBar percent={50} size={100} />);
-    const svgElement = screen.getByTestId("circular-progress");
-    expect(svgElement).toBeInTheDocument();
+    expect(screen.getByTestId("circular-progress")).toBeInTheDocument();
   });
 
   it("calculates the circle's radius and circumference correctly", () => {
@@ -17,10 +17,7 @@ describe("CircularProgressBar Component", () => {
 
     const circle = screen.getByTestId("circular-progress-circle");
     expect(circle).toHaveAttribute("r", radius.toString());
-    expect(circle).toHaveAttribute(
-      "stroke-dasharray",
-      circumference.toString()
-    );
+    expect(circle).toHaveAttribute("stroke-dasharray", circumference.toString());
   });
 
   it("calculates the strokeDashoffset based on the percent prop", () => {
@@ -46,7 +43,6 @@ describe("CircularProgressBar Component", () => {
       </CircularProgressBar>
     );
 
-    const textElement = screen.getByText("Test");
-    expect(textElement).toBeInTheDocument();
+    expect(screen.getByText("Test")).toBeInTheDocument();
   });
 });
