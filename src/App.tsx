@@ -2,15 +2,20 @@ import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 import toggle from "./assets/click.wav";
-import background from "./assets/focus-background.mp3";
 import Button from "./components/Button";
 import CircularProgressBar from "./components/CircularProgressBar";
 import Config from "./components/Config";
+import { CUSTOM_SOUND_ID } from "./components/SoundPicker";
 import Tab from "./components/Tab";
 import Timer from "./components/Timer";
 import Title from "./components/Title";
+import { DEFAULT_SOUND_ID, findSound } from "./data/sounds";
 import useInterval from "./hooks/useInterval";
-import { AudioPlayer } from "./utils/AudioPlayer.class";
+import { AudioPlayer, type AmbientPlayer } from "./utils/AudioPlayer.class";
+import {
+  YouTubeAudioPlayer,
+  extractYouTubeVideoId,
+} from "./utils/YouTubeAudioPlayer.class";
 
 const POMODORO_TIME = 25;
 const REST_TIME = 5;
@@ -23,18 +28,43 @@ function App() {
   const [time, setTime] = useState(pomodoroTime * 60);
   const [onFocus, setOnFocus] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
+  const [selectedSoundId, setSelectedSoundId] = useState(DEFAULT_SOUND_ID);
+  const [customSoundUrl, setCustomSoundUrl] = useState("");
 
   const toggleAudioRef = useRef<AudioPlayer | null>(null);
-  const backgroundAudioRef = useRef<AudioPlayer | null>(null);
+  const ambientPlayerRef = useRef<AmbientPlayer | null>(null);
+  const isOnRef = useRef(isOn);
+  useEffect(() => {
+    isOnRef.current = isOn;
+  }, [isOn]);
 
   useEffect(() => {
     toggleAudioRef.current = new AudioPlayer("audio-toggle", toggle);
-    backgroundAudioRef.current = new AudioPlayer(
-      "audio-background",
-      background,
-      true
-    );
   }, []);
+
+  useEffect(() => {
+    let next: AmbientPlayer | null = null;
+
+    if (selectedSoundId === CUSTOM_SOUND_ID && customSoundUrl) {
+      const ytId = extractYouTubeVideoId(customSoundUrl);
+      next = ytId
+        ? new YouTubeAudioPlayer(ytId)
+        : new AudioPlayer("audio-background", customSoundUrl, true);
+    } else {
+      const sound = findSound(selectedSoundId);
+      if (sound?.src) {
+        next = new AudioPlayer("audio-background", sound.src, true);
+      }
+    }
+
+    if (next && isOnRef.current) next.play();
+    ambientPlayerRef.current = next;
+
+    return () => {
+      next?.destroy();
+      if (ambientPlayerRef.current === next) ambientPlayerRef.current = null;
+    };
+  }, [selectedSoundId, customSoundUrl]);
 
   const getInitialTime = useCallback(
     () => (onFocus ? pomodoroTime : restTime) * 60,
@@ -43,8 +73,8 @@ function App() {
 
   const playAudios = useCallback((playing: boolean) => {
     toggleAudioRef.current?.play();
-    if (playing) backgroundAudioRef.current?.play();
-    else backgroundAudioRef.current?.pause();
+    if (playing) ambientPlayerRef.current?.play();
+    else ambientPlayerRef.current?.pause();
   }, []);
 
   const handleReset = useCallback(() => {
@@ -89,6 +119,11 @@ function App() {
       return !prev;
     });
   };
+
+  const handleApplyCustomUrl = useCallback((url: string) => {
+    setCustomSoundUrl(url);
+    setSelectedSoundId(CUSTOM_SOUND_ID);
+  }, []);
 
   const modeLabel = onFocus ? "Focus" : "Rest";
   const modeClass = onFocus ? "focus" : "rest";
@@ -155,6 +190,8 @@ function App() {
             <Config
               initialPomodoroTime={pomodoroTime}
               initialRestTime={restTime}
+              selectedSoundId={selectedSoundId}
+              customSoundUrl={customSoundUrl}
               setConfig={(newPomodoro, newRest, isResetting) => {
                 playAudios(false);
                 setIsOn(false);
@@ -162,6 +199,8 @@ function App() {
                 setRestTime(newRest);
                 if (!isResetting) setActiveTab(0);
               }}
+              onSelectSound={setSelectedSoundId}
+              onApplyCustomUrl={handleApplyCustomUrl}
             />
           )}
         </div>

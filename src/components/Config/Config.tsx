@@ -2,12 +2,17 @@ import { Check, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
 import Button from "../Button";
 import InputRange from "../InputRange";
+import SoundPicker from "../SoundPicker";
 import "./Config.css";
 
 interface ConfigProps {
   initialPomodoroTime?: number;
   initialRestTime?: number;
+  selectedSoundId: string;
+  customSoundUrl: string;
   setConfig: (pomodoroTime: number, restTime: number, isResetting: boolean) => void;
+  onSelectSound: (soundId: string) => void;
+  onApplyCustomUrl: (url: string) => void;
 }
 
 const DEFAULT_POMODORO_TIME = 25;
@@ -16,7 +21,11 @@ const DEFAULT_REST_TIME = 5;
 const Config = ({
   initialPomodoroTime = DEFAULT_POMODORO_TIME,
   initialRestTime = DEFAULT_REST_TIME,
+  selectedSoundId,
+  customSoundUrl,
   setConfig,
+  onSelectSound,
+  onApplyCustomUrl,
 }: ConfigProps) => {
   const [pomodoroTime, setPomodoroTime] = useState(initialPomodoroTime);
   const [restTime, setRestTime] = useState(initialRestTime);
@@ -54,6 +63,13 @@ const Config = ({
 
   return (
     <div className="config">
+      <SoundPicker
+        selectedSoundId={selectedSoundId}
+        customUrl={customSoundUrl}
+        onSelectSound={onSelectSound}
+        onApplyCustomUrl={onApplyCustomUrl}
+      />
+
       <section className="config-section">
         <h3 className="config-section-heading">Tempos</h3>
         <div className="config-input">

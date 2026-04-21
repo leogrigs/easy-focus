@@ -4,25 +4,33 @@ import Config from "./Config";
 
 describe("Config Component", () => {
   const mockSetConfig = vi.fn();
+  const mockOnSelectSound = vi.fn();
+  const mockOnApplyCustomUrl = vi.fn();
 
   const defaultProps = {
     initialPomodoroTime: 25,
     initialRestTime: 5,
+    selectedSoundId: "original",
+    customSoundUrl: "",
     setConfig: mockSetConfig,
+    onSelectSound: mockOnSelectSound,
+    onApplyCustomUrl: mockOnApplyCustomUrl,
   };
 
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders input ranges and buttons", () => {
+  it("renders timer sliders and the footer actions", () => {
     render(<Config {...defaultProps} />);
 
     expect(screen.getByText("Focus:")).toBeInTheDocument();
     expect(screen.getByText("Rest:")).toBeInTheDocument();
     expect(screen.getByText("Volume:")).toBeInTheDocument();
 
-    expect(screen.getAllByRole("button").length).toBe(3);
+    expect(screen.getByRole("button", { name: /restaurar padrões/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^mutar|desmutar$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^salvar$/i })).toBeInTheDocument();
   });
 
   it("allows changing focus and rest times", () => {
@@ -41,8 +49,7 @@ describe("Config Component", () => {
   it("resets the configuration to default values", () => {
     render(<Config {...defaultProps} />);
 
-    const resetButton = screen.getAllByRole("button")[0];
-    fireEvent.click(resetButton);
+    fireEvent.click(screen.getByRole("button", { name: /restaurar padrões/i }));
 
     expect(mockSetConfig).toHaveBeenCalledWith(25, 5, true);
   });
@@ -50,8 +57,7 @@ describe("Config Component", () => {
   it("saves the current configuration when clicking the save button", () => {
     render(<Config {...defaultProps} />);
 
-    const saveButton = screen.getAllByRole("button")[2];
-    fireEvent.click(saveButton);
+    fireEvent.click(screen.getByRole("button", { name: /^salvar$/i }));
 
     expect(mockSetConfig).toHaveBeenCalledWith(25, 5, false);
   });
