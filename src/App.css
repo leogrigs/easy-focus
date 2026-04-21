@@ -70,6 +70,9 @@
 .pomodoro-mode--rest {
   color: var(--accent-rest);
 }
+.pomodoro-mode--long-rest {
+  color: var(--accent-long-rest);
+}
 
 .pomodoro-timer {
   position: relative;
@@ -83,6 +86,9 @@
 }
 .pomodoro-timer--rest {
   --ring-color: var(--accent-rest);
+}
+.pomodoro-timer--long-rest {
+  --ring-color: var(--accent-long-rest);
 }
 
 .pomodoro-timer.is-running::after {
@@ -100,11 +106,46 @@
   z-index: -1;
 }
 
+.pomodoro-cycles {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.pomodoro-cycles-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--border-strong);
+  transition: background var(--duration-base) var(--ease),
+    transform var(--duration-base) var(--ease);
+}
+
+.pomodoro-cycles-dot.is-filled {
+  background: var(--accent-focus);
+  transform: scale(1.15);
+}
+
 .pomodoro-controls {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-4);
+}
+
+.pomodoro-shortcuts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pomodoro-shortcuts .dot-separator {
+  opacity: 0.4;
+  margin: 0 2px;
 }
 
 @keyframes pulse {

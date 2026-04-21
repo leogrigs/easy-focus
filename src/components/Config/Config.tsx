@@ -1,64 +1,84 @@
-import { Check, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Check, RotateCcw, Volume2, VolumeX, Timer as TimerIcon } from "lucide-react";
 import Button from "../Button";
 import InputRange from "../InputRange";
 import SoundPicker from "../SoundPicker";
 import "./Config.css";
 
+export const DEFAULT_POMODORO_TIME = 25;
+export const DEFAULT_REST_TIME = 5;
+export const DEFAULT_LONG_REST_TIME = 15;
+
+export interface TimerConfig {
+  pomodoroTime: number;
+  restTime: number;
+  longRestTime: number;
+}
+
 interface ConfigProps {
-  initialPomodoroTime?: number;
-  initialRestTime?: number;
+  pomodoroTime: number;
+  restTime: number;
+  longRestTime: number;
+  volume: number;
+  isMuted: boolean;
+  cycleCount: number;
   selectedSoundId: string;
   customSoundUrl: string;
-  setConfig: (pomodoroTime: number, restTime: number, isResetting: boolean) => void;
+  onSaveTimers: (config: TimerConfig, closeTab: boolean) => void;
+  onVolumeChange: (volume: number) => void;
+  onToggleMute: () => void;
+  onResetCycles: () => void;
   onSelectSound: (soundId: string) => void;
   onApplyCustomUrl: (url: string) => void;
 }
 
-const DEFAULT_POMODORO_TIME = 25;
-const DEFAULT_REST_TIME = 5;
-
 const Config = ({
-  initialPomodoroTime = DEFAULT_POMODORO_TIME,
-  initialRestTime = DEFAULT_REST_TIME,
+  pomodoroTime,
+  restTime,
+  longRestTime,
+  volume,
+  isMuted,
+  cycleCount,
   selectedSoundId,
   customSoundUrl,
-  setConfig,
+  onSaveTimers,
+  onVolumeChange,
+  onToggleMute,
+  onResetCycles,
   onSelectSound,
   onApplyCustomUrl,
 }: ConfigProps) => {
-  const [pomodoroTime, setPomodoroTime] = useState(initialPomodoroTime);
-  const [restTime, setRestTime] = useState(initialRestTime);
-  const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(0.5);
+  const [draftPomodoro, setDraftPomodoro] = useState(pomodoroTime);
+  const [draftRest, setDraftRest] = useState(restTime);
+  const [draftLongRest, setDraftLongRest] = useState(longRestTime);
 
-  useEffect(() => {
-    const audio = document.getElementsByTagName("audio")[0];
-    if (audio) {
-      setIsMuted(audio.muted);
-      setVolume(audio.volume);
-    }
-  }, []);
+  useEffect(() => setDraftPomodoro(pomodoroTime), [pomodoroTime]);
+  useEffect(() => setDraftRest(restTime), [restTime]);
+  useEffect(() => setDraftLongRest(longRestTime), [longRestTime]);
 
-  const handleToggle = () => {
-    setIsMuted((prev) => {
-      const audios = document.getElementsByTagName("audio");
-      for (const a of audios) a.muted = !prev;
-      return !prev;
-    });
+  const resetDefaults = () => {
+    setDraftPomodoro(DEFAULT_POMODORO_TIME);
+    setDraftRest(DEFAULT_REST_TIME);
+    setDraftLongRest(DEFAULT_LONG_REST_TIME);
+    onSaveTimers(
+      {
+        pomodoroTime: DEFAULT_POMODORO_TIME,
+        restTime: DEFAULT_REST_TIME,
+        longRestTime: DEFAULT_LONG_REST_TIME,
+      },
+      false
+    );
   };
 
-  const handleVolumeChange = (v: number) => {
-    const audios = document.getElementsByTagName("audio");
-    for (const a of audios) a.volume = v;
-    setVolume(v);
-    setIsMuted(v === 0);
-  };
-
-  const resetConfig = () => {
-    setPomodoroTime(DEFAULT_POMODORO_TIME);
-    setRestTime(DEFAULT_REST_TIME);
-    setConfig(DEFAULT_POMODORO_TIME, DEFAULT_REST_TIME, true);
+  const applyDraft = () => {
+    onSaveTimers(
+      {
+        pomodoroTime: draftPomodoro,
+        restTime: draftRest,
+        longRestTime: draftLongRest,
+      },
+      true
+    );
   };
 
   return (
@@ -75,21 +95,30 @@ const Config = ({
         <div className="config-input">
           <InputRange
             label="Focus:"
-            value={pomodoroTime}
+            value={draftPomodoro}
             min={1}
             max={60}
             step={1}
-            valueLabelFunction={(v) => `${v}min`}
-            handleValueChange={setPomodoroTime}
+            valueLabelFunction={(value) => `${value}min`}
+            handleValueChange={setDraftPomodoro}
           />
           <InputRange
             label="Rest:"
-            value={restTime}
+            value={draftRest}
             min={1}
             max={30}
             step={1}
-            valueLabelFunction={(v) => `${v}min`}
-            handleValueChange={setRestTime}
+            valueLabelFunction={(value) => `${value}min`}
+            handleValueChange={setDraftRest}
+          />
+          <InputRange
+            label="Long break:"
+            value={draftLongRest}
+            min={5}
+            max={45}
+            step={1}
+            valueLabelFunction={(value) => `${value}min`}
+            handleValueChange={setDraftLongRest}
           />
         </div>
       </section>
@@ -103,9 +132,23 @@ const Config = ({
             min={0}
             max={1}
             step={0.01}
-            valueLabelFunction={(v) => `${Math.round(v * 100)}%`}
-            handleValueChange={handleVolumeChange}
+            valueLabelFunction={(value) => `${Math.round(value * 100)}%`}
+            handleValueChange={onVolumeChange}
           />
+        </div>
+      </section>
+
+      <section className="config-section">
+        <div className="config-cycles">
+          <TimerIcon size={16} aria-hidden="true" />
+          <span>Ciclos concluídos: {cycleCount}</span>
+          <button
+            type="button"
+            className="config-cycles-reset"
+            onClick={onResetCycles}
+          >
+            zerar
+          </button>
         </div>
       </section>
 
@@ -113,20 +156,20 @@ const Config = ({
         <Button
           variant="default"
           icon={RotateCcw}
-          onClick={resetConfig}
+          onClick={resetDefaults}
           ariaLabel="Restaurar padrões"
         />
         <Button
           variant="default"
           icon={isMuted ? VolumeX : Volume2}
-          onClick={handleToggle}
+          onClick={onToggleMute}
           ariaLabel={isMuted ? "Desmutar" : "Mutar"}
         />
         <Button
           variant="primary"
           icon={Check}
-          onClick={() => setConfig(pomodoroTime, restTime, false)}
-          ariaLabel="Salvar"
+          onClick={applyDraft}
+          ariaLabel="Salvar tempos"
         />
       </div>
     </div>

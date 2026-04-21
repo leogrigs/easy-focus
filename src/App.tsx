@@ -1,37 +1,84 @@
 import { Pause, Play, RotateCcw, SkipForward } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import "./App.css";
-import toggle from "./assets/click.wav";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import clickSound from "./assets/click.wav";
 import Button from "./components/Button";
 import CircularProgressBar from "./components/CircularProgressBar";
-import Config from "./components/Config";
+import Config, {
+  DEFAULT_LONG_REST_TIME,
+  DEFAULT_POMODORO_TIME,
+  DEFAULT_REST_TIME,
+  type TimerConfig,
+} from "./components/Config";
 import { CUSTOM_SOUND_ID } from "./components/SoundPicker";
 import Tab from "./components/Tab";
 import Timer from "./components/Timer";
 import Title from "./components/Title";
 import { DEFAULT_SOUND_ID, findSound } from "./data/sounds";
-import useInterval from "./hooks/useInterval";
+import { useInterval } from "./hooks/useInterval";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 import { AudioPlayer, type AmbientPlayer } from "./utils/AudioPlayer.class";
 import {
   YouTubeAudioPlayer,
   extractYouTubeVideoId,
 } from "./utils/YouTubeAudioPlayer.class";
+import "./App.css";
 
-const POMODORO_TIME = 25;
-const REST_TIME = 5;
+const CYCLES_BEFORE_LONG_BREAK = 4;
+
+function formatTime(seconds: number): string {
+  const safe = Math.max(0, seconds);
+  const m = String(Math.floor(safe / 60)).padStart(2, "0");
+  const s = String(safe % 60).padStart(2, "0");
+  return `${m}:${s}`;
+}
 
 function App() {
-  const [isOn, setIsOn] = useState(false);
-  const [pomodoroTime, setPomodoroTime] = useState(POMODORO_TIME);
-  const [restTime, setRestTime] = useState(REST_TIME);
-  const [percentComplete, setPercentComplete] = useState(0);
-  const [time, setTime] = useState(pomodoroTime * 60);
-  const [onFocus, setOnFocus] = useState(true);
-  const [activeTab, setActiveTab] = useState(0);
-  const [selectedSoundId, setSelectedSoundId] = useState(DEFAULT_SOUND_ID);
-  const [customSoundUrl, setCustomSoundUrl] = useState("");
+  const [pomodoroTime, setPomodoroTime] = useLocalStorage(
+    "pomodoroTime",
+    DEFAULT_POMODORO_TIME
+  );
+  const [restTime, setRestTime] = useLocalStorage("restTime", DEFAULT_REST_TIME);
+  const [longRestTime, setLongRestTime] = useLocalStorage(
+    "longRestTime",
+    DEFAULT_LONG_REST_TIME
+  );
+  const [volume, setVolume] = useLocalStorage("volume", 0.5);
+  const [isMuted, setIsMuted] = useLocalStorage("muted", false);
+  const [selectedSoundId, setSelectedSoundId] = useLocalStorage(
+    "selectedSoundId",
+    DEFAULT_SOUND_ID
+  );
+  const [customSoundUrl, setCustomSoundUrl] = useLocalStorage(
+    "customSoundUrl",
+    ""
+  );
+  const [cycleCount, setCycleCount] = useLocalStorage("cycleCount", 0);
 
-  const toggleAudioRef = useRef<AudioPlayer | null>(null);
+  const [isOn, setIsOn] = useState(false);
+  const [onFocus, setOnFocus] = useState(true);
+  const [isLongBreakActive, setIsLongBreakActive] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+  const [time, setTime] = useState(() => pomodoroTime * 60);
+
+  const getCurrentDuration = useCallback((): number => {
+    if (onFocus) return pomodoroTime * 60;
+    return (isLongBreakActive ? longRestTime : restTime) * 60;
+  }, [onFocus, isLongBreakActive, pomodoroTime, restTime, longRestTime]);
+
+  // When mode or durations change, reset countdown to the new duration.
+  useEffect(() => {
+    setTime(getCurrentDuration());
+  }, [getCurrentDuration]);
+
+  const totalDuration = getCurrentDuration();
+  const percentComplete = useMemo(() => {
+    if (totalDuration <= 0) return 0;
+    return ((totalDuration - time) / totalDuration) * 100;
+  }, [time, totalDuration]);
+
+  // Audio players
+  const clickPlayerRef = useRef<AudioPlayer | null>(null);
   const ambientPlayerRef = useRef<AmbientPlayer | null>(null);
   const isOnRef = useRef(isOn);
   useEffect(() => {
@@ -39,7 +86,16 @@ function App() {
   }, [isOn]);
 
   useEffect(() => {
-    toggleAudioRef.current = new AudioPlayer("audio-toggle", toggle);
+    const player = new AudioPlayer("audio-toggle", clickSound);
+    player.setVolume(volume);
+    player.setMuted(isMuted);
+    clickPlayerRef.current = player;
+    return () => {
+      player.destroy();
+      clickPlayerRef.current = null;
+    };
+    // Run once; volume/mute sync handled in dedicated effects below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -57,76 +113,144 @@ function App() {
       }
     }
 
-    if (next && isOnRef.current) next.play();
+    if (next) {
+      next.setVolume(volume);
+      next.setMuted(isMuted);
+      if (isOnRef.current) next.play();
+    }
+
     ambientPlayerRef.current = next;
 
     return () => {
       next?.destroy();
       if (ambientPlayerRef.current === next) ambientPlayerRef.current = null;
     };
+    // Volume/mute/isOn propagate via other effects; re-creating on every
+    // toggle would make audio glitch.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSoundId, customSoundUrl]);
 
-  const getInitialTime = useCallback(
-    () => (onFocus ? pomodoroTime : restTime) * 60,
-    [onFocus, pomodoroTime, restTime]
-  );
+  useEffect(() => {
+    clickPlayerRef.current?.setVolume(volume);
+    ambientPlayerRef.current?.setVolume(volume);
+  }, [volume]);
 
-  const playAudios = useCallback((playing: boolean) => {
-    toggleAudioRef.current?.play();
-    if (playing) ambientPlayerRef.current?.play();
-    else ambientPlayerRef.current?.pause();
-  }, []);
+  useEffect(() => {
+    clickPlayerRef.current?.setMuted(isMuted);
+    ambientPlayerRef.current?.setMuted(isMuted);
+  }, [isMuted]);
 
-  const handleReset = useCallback(() => {
+  const advanceMode = useCallback(() => {
+    ambientPlayerRef.current?.pause();
     setIsOn(false);
-    setTime(getInitialTime());
-    setPercentComplete(0);
-  }, [getInitialTime]);
+    if (onFocus) {
+      const nextCount = cycleCount + 1;
+      setCycleCount(nextCount);
+      setIsLongBreakActive(nextCount % CYCLES_BEFORE_LONG_BREAK === 0);
+    } else {
+      setIsLongBreakActive(false);
+    }
+    setOnFocus((prev) => !prev);
+  }, [onFocus, cycleCount, setCycleCount]);
 
   useInterval(
     () => {
-      setTime((prevTime) => {
-        const remainingTime = prevTime - 1;
-        setPercentComplete(
-          ((getInitialTime() - remainingTime) / getInitialTime()) * 100
-        );
-        if (prevTime === 0) {
-          setIsOn(false);
-          setOnFocus((prev) => !prev);
-          playAudios(false);
-          return getInitialTime();
+      setTime((prev) => {
+        if (prev <= 1) {
+          clickPlayerRef.current?.play();
+          advanceMode();
+          return 0;
         }
-        return remainingTime;
+        return prev - 1;
       });
     },
     isOn ? 1000 : null
   );
 
   useEffect(() => {
-    handleReset();
-  }, [onFocus, pomodoroTime, restTime, handleReset]);
+    if (!isOn) {
+      document.title = "Easy Focus";
+      return;
+    }
+    const mode = onFocus
+      ? "Focus"
+      : isLongBreakActive
+      ? "Long break"
+      : "Rest";
+    document.title = `${formatTime(time)} · ${mode}`;
+  }, [isOn, onFocus, isLongBreakActive, time]);
 
-  const handleToggle = () => {
+  useEffect(
+    () => () => {
+      document.title = "Easy Focus";
+    },
+    []
+  );
+
+  const handleToggle = useCallback(() => {
+    clickPlayerRef.current?.play();
     setIsOn((prev) => {
-      playAudios(!prev);
-      return !prev;
+      const next = !prev;
+      if (next) ambientPlayerRef.current?.play();
+      else ambientPlayerRef.current?.pause();
+      return next;
     });
-  };
-
-  const handleNext = () => {
-    setOnFocus((prev) => {
-      playAudios(false);
-      return !prev;
-    });
-  };
-
-  const handleApplyCustomUrl = useCallback((url: string) => {
-    setCustomSoundUrl(url);
-    setSelectedSoundId(CUSTOM_SOUND_ID);
   }, []);
 
-  const modeLabel = onFocus ? "Focus" : "Rest";
-  const modeClass = onFocus ? "focus" : "rest";
+  const handleReset = useCallback(() => {
+    clickPlayerRef.current?.play();
+    ambientPlayerRef.current?.pause();
+    setIsOn(false);
+    setTime(getCurrentDuration());
+  }, [getCurrentDuration]);
+
+  const handleNext = useCallback(() => {
+    clickPlayerRef.current?.play();
+    advanceMode();
+  }, [advanceMode]);
+
+  const handleSaveTimers = useCallback(
+    (cfg: TimerConfig, closeTab: boolean) => {
+      ambientPlayerRef.current?.pause();
+      setIsOn(false);
+      setPomodoroTime(cfg.pomodoroTime);
+      setRestTime(cfg.restTime);
+      setLongRestTime(cfg.longRestTime);
+      if (closeTab) setActiveTab(0);
+    },
+    [setPomodoroTime, setRestTime, setLongRestTime]
+  );
+
+  const handleSelectSound = useCallback(
+    (soundId: string) => setSelectedSoundId(soundId),
+    [setSelectedSoundId]
+  );
+
+  const handleApplyCustomUrl = useCallback(
+    (url: string) => {
+      setCustomSoundUrl(url);
+      setSelectedSoundId(CUSTOM_SOUND_ID);
+    },
+    [setCustomSoundUrl, setSelectedSoundId]
+  );
+
+  const shortcuts = useMemo(
+    () => ({
+      " ": handleToggle,
+      r: handleReset,
+      n: handleNext,
+    }),
+    [handleToggle, handleReset, handleNext]
+  );
+  useKeyboardShortcuts(shortcuts);
+
+  const modeLabel = onFocus
+    ? "Focus"
+    : isLongBreakActive
+    ? "Long break"
+    : "Rest";
+  const modeClass = onFocus ? "focus" : isLongBreakActive ? "long-rest" : "rest";
+  const filledDots = cycleCount % CYCLES_BEFORE_LONG_BREAK;
 
   return (
     <main className="app">
@@ -162,14 +286,26 @@ function App() {
                 </CircularProgressBar>
               </div>
 
+              <div
+                className="pomodoro-cycles"
+                aria-label={`Ciclos: ${filledDots} de ${CYCLES_BEFORE_LONG_BREAK}`}
+              >
+                {Array.from({ length: CYCLES_BEFORE_LONG_BREAK }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={`pomodoro-cycles-dot${
+                      i < filledDots ? " is-filled" : ""
+                    }`}
+                    aria-hidden="true"
+                  />
+                ))}
+              </div>
+
               <div className="pomodoro-controls">
                 <Button
                   variant="default"
                   icon={RotateCcw}
-                  onClick={() => {
-                    handleReset();
-                    playAudios(false);
-                  }}
+                  onClick={handleReset}
                   ariaLabel="Resetar"
                 />
                 <Button
@@ -185,21 +321,33 @@ function App() {
                   ariaLabel="Pular"
                 />
               </div>
+
+              <div className="pomodoro-shortcuts" aria-hidden="true">
+                <kbd>Space</kbd>
+                <span>iniciar</span>
+                <span className="dot-separator">·</span>
+                <kbd>R</kbd>
+                <span>reset</span>
+                <span className="dot-separator">·</span>
+                <kbd>N</kbd>
+                <span>pular</span>
+              </div>
             </div>
           ) : (
             <Config
-              initialPomodoroTime={pomodoroTime}
-              initialRestTime={restTime}
+              pomodoroTime={pomodoroTime}
+              restTime={restTime}
+              longRestTime={longRestTime}
+              volume={volume}
+              isMuted={isMuted}
+              cycleCount={cycleCount}
               selectedSoundId={selectedSoundId}
               customSoundUrl={customSoundUrl}
-              setConfig={(newPomodoro, newRest, isResetting) => {
-                playAudios(false);
-                setIsOn(false);
-                setPomodoroTime(newPomodoro);
-                setRestTime(newRest);
-                if (!isResetting) setActiveTab(0);
-              }}
-              onSelectSound={setSelectedSoundId}
+              onSaveTimers={handleSaveTimers}
+              onVolumeChange={setVolume}
+              onToggleMute={() => setIsMuted((m) => !m)}
+              onResetCycles={() => setCycleCount(0)}
+              onSelectSound={handleSelectSound}
               onApplyCustomUrl={handleApplyCustomUrl}
             />
           )}
