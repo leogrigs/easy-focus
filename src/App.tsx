@@ -14,7 +14,6 @@ import Tab from "./components/Tab";
 import Timer from "./components/Timer";
 import Title from "./components/Title";
 import { DEFAULT_SOUND_ID, findSound } from "./data/sounds";
-import { useInterval } from "./hooks/useInterval";
 import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { AudioPlayer, type AmbientPlayer } from "./utils/AudioPlayer.class";
@@ -25,6 +24,7 @@ import {
 import "./App.css";
 
 const CYCLES_BEFORE_LONG_BREAK = 4;
+const TICK_INTERVAL_MS = 250;
 
 function formatTime(seconds: number): string {
   const safe = Math.max(0, seconds);
@@ -84,6 +84,21 @@ function App() {
   useEffect(() => {
     isOnRef.current = isOn;
   }, [isOn]);
+
+  // Deadline-based timer: we anchor `endsAtRef` to a wall-clock timestamp and
+  // derive remaining seconds on each tick. A Web Worker drives the ticks so
+  // background-tab throttling can't slow the countdown or delay the end-of-
+  // cycle event. `timeRef` mirrors `time` for use inside stable callbacks.
+  const endsAtRef = useRef<number | null>(null);
+  const timeRef = useRef(time);
+  useEffect(() => {
+    timeRef.current = time;
+  }, [time]);
+
+  const workerRef = useRef<Worker | null>(null);
+  const fallbackIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null
+  );
 
   useEffect(() => {
     const player = new AudioPlayer("audio-toggle", clickSound);
@@ -153,19 +168,77 @@ function App() {
     setOnFocus((prev) => !prev);
   }, [onFocus, cycleCount, setCycleCount]);
 
-  useInterval(
-    () => {
-      setTime((prev) => {
-        if (prev <= 1) {
-          clickPlayerRef.current?.play();
-          advanceMode();
-          return 0;
-        }
-        return prev - 1;
-      });
-    },
-    isOn ? 1000 : null
-  );
+  const advanceModeRef = useRef(advanceMode);
+  useEffect(() => {
+    advanceModeRef.current = advanceMode;
+  }, [advanceMode]);
+
+  const evaluateDeadline = useCallback(() => {
+    const endsAt = endsAtRef.current;
+    if (endsAt === null) return;
+    const remaining = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+    setTime((prev) => (prev === remaining ? prev : remaining));
+    if (remaining <= 0) {
+      endsAtRef.current = null;
+      clickPlayerRef.current?.play();
+      advanceModeRef.current();
+    }
+  }, []);
+
+  // Create the Worker once. In environments where Workers are unavailable
+  // (e.g., jsdom in tests), fall back to a main-thread interval — those
+  // contexts don't experience background throttling anyway.
+  useEffect(() => {
+    let worker: Worker | null = null;
+    try {
+      worker = new Worker(
+        new URL("./workers/timerTicker.worker.ts", import.meta.url),
+        { type: "module" }
+      );
+      worker.onmessage = () => evaluateDeadline();
+    } catch {
+      worker = null;
+    }
+    workerRef.current = worker;
+    return () => {
+      worker?.terminate();
+      workerRef.current = null;
+    };
+  }, [evaluateDeadline]);
+
+  // Anchor / clear the deadline alongside the running state, and start/stop
+  // whichever ticker is available.
+  useEffect(() => {
+    if (isOn) {
+      endsAtRef.current = Date.now() + timeRef.current * 1000;
+      const worker = workerRef.current;
+      if (worker) {
+        worker.postMessage({ type: "start", interval: TICK_INTERVAL_MS });
+      } else {
+        fallbackIntervalRef.current = setInterval(
+          evaluateDeadline,
+          TICK_INTERVAL_MS
+        );
+      }
+    } else {
+      endsAtRef.current = null;
+      workerRef.current?.postMessage({ type: "stop" });
+      if (fallbackIntervalRef.current !== null) {
+        clearInterval(fallbackIntervalRef.current);
+        fallbackIntervalRef.current = null;
+      }
+    }
+  }, [isOn, evaluateDeadline]);
+
+  // Snap to the correct value the instant the tab becomes visible, instead of
+  // waiting for the next worker tick to land on the main thread.
+  useEffect(() => {
+    const handler = () => {
+      if (document.visibilityState === "visible") evaluateDeadline();
+    };
+    document.addEventListener("visibilitychange", handler);
+    return () => document.removeEventListener("visibilitychange", handler);
+  }, [evaluateDeadline]);
 
   useEffect(() => {
     if (!isOn) {
